@@ -37,13 +37,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   autocomplete_textfield: ^2.0.1
   provider: ^6.0.5
-  geolocator: ^9.0.2
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
   geocoding: ^2.1.0
   cloud_firestore: ^4.8.1
   firebase_database: ^10.2.3
-  intl: ^0.18.1 
+  intl: ^0.18.1
+  flutter_material_color_picker: ^1.2.0
+  font_awesome_flutter: ^10.4.0
+  collection: ^1.17.2
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:

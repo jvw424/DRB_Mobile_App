@@ -6,7 +6,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 
 class AddLocation extends StatefulWidget {
-  AddLocation({super.key});
+  const AddLocation({super.key});
 
   @override
   State<AddLocation> createState() => _AddLocationState();
@@ -60,7 +60,7 @@ class _AddLocationState extends State<AddLocation> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 14,
                   ),
                   Expanded(
@@ -80,7 +80,7 @@ class _AddLocationState extends State<AddLocation> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: Container(
+                child: SizedBox(
                   height: 13,
                   width: MediaQuery.of(context).size.width * 8,
                   child: Padding(
@@ -106,7 +106,7 @@ class _AddLocationState extends State<AddLocation> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 14,
                   ),
                   Expanded(
@@ -122,7 +122,7 @@ class _AddLocationState extends State<AddLocation> {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 14,
               ),
               Row(
@@ -138,7 +138,7 @@ class _AddLocationState extends State<AddLocation> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 14,
                   ),
                   Expanded(
@@ -152,7 +152,7 @@ class _AddLocationState extends State<AddLocation> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 14,
                   ),
                   Expanded(
@@ -204,8 +204,8 @@ class _AddLocationState extends State<AddLocation> {
                       long: locations[0].longitude,
                     );
 
-                    lotProv.addLocation(newLoc);
-                    lotProv.fetchLots();
+                    await lotProv.addLocation(newLoc);
+                    await lotProv.fetchLots();
 
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -1,74 +1,56 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drb_app/Screens/drb_route/LocationSelector.dart';
 import 'package:drb_app/Screens/home/NavDrawer.dart';
-import 'package:drb_app/models/LotLocations.dart';
-import 'package:drb_app/models/Rate.dart';
-import 'package:drb_app/models/Sequence.dart';
 import 'package:drb_app/providers/LotProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  _TabsPageState createState() => _TabsPageState();
-}
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-class _TabsPageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
-
-  List<Sequence> sList = [
-    Sequence(
-        rates: [
-          Rate(startNumber: 23001, startCod: 0, shortTimes: [], attendants: []),
-          Rate(startNumber: 23005, startCod: 0, shortTimes: [], attendants: [])
-        ],
-        startCredit: DateFormat('h:mm a M/d/yy').format(DateTime.now()),
-        color: 2),
-    Sequence(
-        rates: [
-          Rate(startNumber: 32001, startCod: 0, shortTimes: [], attendants: [])
-        ],
-        startCredit: DateFormat('h:mm a M/d/yy').format(DateTime.now()),
-        color: 4),
-  ];
-
-  // List<LotLocation> lots = [];
-
-  // void setList() {
-  //   lots = DatabaseService().getLocations() as List<LotLocation>;
-  // }
-
-  // void buttonHelp() {
-  //   final client = Client()
-  //       .setEndpoint('https://cloud.appwrite.io/v1')
-  //       .setProject(appwriteId);
-  //   final databases = Databases(client);
-
-  //   locations.forEach((element) {
-  //     try {
-  //       final document = databases.createDocument(
-  //           databaseId: appwriteDatabaseId,
-  //           collectionId: collectionLoctions,
-  //           documentId: ID.unique(),
-  //           data: element);
-  //     } on AppwriteException catch (e) {
-  //       print(e);
-  //     }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
-    final lotProv = Provider.of<LotProvider>(context);
+    final lotProv = Provider.of<LotProvider>(context, listen: false);
     return Scaffold(
-      drawer: NavDrawer(),
-      appBar: AppBar(title: Text("DRB Home")),
+      drawer: const NavDrawer(),
+      appBar: AppBar(title: const Text("DRB Home")),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 60, right: 60),
@@ -103,13 +85,12 @@ class _TabsPageState extends State<HomePage> {
                   style: ElevatedButton.styleFrom(
                       side: const BorderSide(
                         width: 2.0,
-                        color: const Color.fromARGB(255, 83, 120, 139),
+                        color: Color.fromARGB(255, 83, 120, 139),
                       ),
                       fixedSize: const Size(300, 100),
                       backgroundColor: Colors.white),
                   onPressed: () async {
-                    lotProv.fetchSeqs("Aliso");
-                    print(lotProv.getSeqs);
+                    _determinePosition();
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

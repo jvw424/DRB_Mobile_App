@@ -9,10 +9,13 @@ class Rate extends ChangeNotifier {
   int voids;
   int validations;
   int credits;
-  List<int> shortTimes;
+  Map<int, int> shortTimes;
   List<String> attendants;
+  String closeTimes;
+  int pickup;
   int cash;
   int creditTotal;
+  bool wasSaved;
 
   Rate({
     this.rate = 0,
@@ -23,28 +26,35 @@ class Rate extends ChangeNotifier {
     this.voids = 0,
     this.validations = 0,
     this.credits = 0,
-    required List<int> shortTimes,
+    required Map<int, int> shortTimes,
     required List<String> attendants,
     this.cash = 0,
     this.creditTotal = 0,
+    this.closeTimes = '',
+    this.pickup = 0,
+    this.wasSaved = false,
   })  : attendants = attendants ?? [],
-        shortTimes = shortTimes ?? [];
+        shortTimes = shortTimes ?? {};
 
   factory Rate.fromMap(Map data) {
     return Rate(
-      rate: int.parse(data['rate']),
-      startNumber: int.parse(data['startNumber']),
-      endNumber: int.parse(data['endNumber']),
-      startCod: int.parse(data['startCod']),
-      endCod: int.parse(data['endCod']),
-      voids: int.parse(data['voids']),
-      validations: int.parse(data['validations']),
-      credits: int.parse(data['credits']),
-      shortTimes: data['shortTimes'].cast<int>(),
-      attendants: data['attendants'].cast<String>(),
-      cash: int.parse(data['cash']),
-      creditTotal: int.parse(data['creditTotal']),
-    );
+        rate: data['rate'],
+        startNumber: data['startNumber'],
+        endNumber: data['endNumber'],
+        startCod: data['startCod'],
+        endCod: data['endCod'],
+        voids: data['voids'],
+        validations: data['validations'],
+        credits: data['credits'],
+        shortTimes: data['shortTimes'].map<int, int>(
+          (key, value) => MapEntry<int, int>(int.parse(key), int.parse(value)),
+        ),
+        attendants: data['attendants'].cast<String>(),
+        cash: data['cash'],
+        creditTotal: data['creditTotal'],
+        closeTimes: data['closeTimes'],
+        pickup: data['pickup'],
+        wasSaved: data['wasSaved']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +70,9 @@ class Rate extends ChangeNotifier {
         'attendants': attendants,
         'cash': cash,
         'creditTotal': creditTotal,
+        'closeTimes': closeTimes,
+        'pickup': pickup,
+        'wasSaved': wasSaved,
       };
 
   @override

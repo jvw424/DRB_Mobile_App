@@ -1,5 +1,7 @@
 import 'package:drb_app/Screens/home/Wrapper.dart';
+import 'package:drb_app/providers/AttendantProvider.dart';
 import 'package:drb_app/providers/LotProvider.dart';
+import 'package:drb_app/providers/SeqProvider.dart';
 import 'package:drb_app/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +26,10 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (_) => AuthService(),
         ),
-        ChangeNotifierProvider<LotProvider>(create: (_) => LotProvider())
+        ChangeNotifierProvider<LotProvider>(create: (_) => LotProvider()),
+        ChangeNotifierProvider<SeqProvider>(create: (_) => SeqProvider()),
+        ChangeNotifierProvider<AttendantProvider>(
+            create: (_) => AttendantProvider()),
       ],
       child: MaterialApp(
           title: 'Drb App',

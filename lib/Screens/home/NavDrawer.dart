@@ -1,11 +1,11 @@
-import 'package:drb_app/Screens/Auth/LoginPage.dart';
 import 'package:drb_app/Screens/drawer/AddLocation.dart';
-import 'package:drb_app/providers/LotProvider.dart';
 import 'package:drb_app/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NavDrawer extends StatelessWidget {
+  const NavDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     final authServ = Provider.of<AuthService>(context);
@@ -20,34 +20,34 @@ class NavDrawer extends StatelessWidget {
             child: SizedBox.shrink(),
           ),
           ListTile(
-            leading: Icon(Icons.folder),
-            title: Text('Past Submissions'),
+            leading: const Icon(Icons.folder),
+            title: const Text('Past Submissions'),
             onTap: () => {},
           ),
           ListTile(
-            leading: Icon(Icons.verified_user),
-            title: Text('Add Location'),
+            leading: const Icon(Icons.verified_user),
+            title: const Text('Add Location'),
             onTap: () => {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddLocation(),
+                    builder: (context) => const AddLocation(),
                   ))
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Profile'),
+            leading: const Icon(Icons.settings),
+            title: const Text('Profile'),
             onTap: () => {Navigator.of(context).pop()},
           ),
           ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('Map'),
+            leading: const Icon(Icons.border_color),
+            title: const Text('Map'),
             onTap: () => {},
           ),
           ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: Text('Logout'),
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Logout'),
               onTap: () async {
                 await authServ.signOut();
                 // Navigator.of(context).pushAndRemoveUntil(

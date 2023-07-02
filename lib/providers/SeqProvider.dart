@@ -93,7 +93,7 @@ class SeqProvider extends ChangeNotifier {
     int shortTimeValue = 0;
 
     curRate.shortTimes.forEach((price, quant) {
-      shortTimeValue += price * quant;
+      shortTimeValue += int.parse(price) * quant;
       numShortTics += quant;
     });
 
@@ -163,7 +163,7 @@ class SeqProvider extends ChangeNotifier {
 
   addShortTime({required int val, required int quant, required int idx}) {
     //print(_seqs[idx].rates.last.attendants.runtimeType);
-    _seqs[idx].rates.last.shortTimes[val] = quant;
+    _seqs[idx].rates.last.shortTimes[val.toString()] = quant;
 
     applyChanges(idx);
     notifyListeners();
@@ -184,17 +184,20 @@ class SeqProvider extends ChangeNotifier {
     _seqs[idx].saved = isSaved;
   }
 
-  cashPickup(int pickup) {
+  cashPickup(int pickup, String supervisor) {
     for (var seq in _seqs) {
       if (seq.saved) {
         seq.rates.last.pickup = pickup;
+        seq.rates.last.supervisor = supervisor;
       }
     }
 
     notifyListeners();
   }
 
-  saveButton(IterableZip<dynamic> times, String loc) async {
+  makeCloseTimes(
+    IterableZip<dynamic> times,
+  ) {
     for (final pair in times) {
       for (var seq in _seqs) {
         if (pair[0] == seq.startCredit) {
@@ -204,7 +207,9 @@ class SeqProvider extends ChangeNotifier {
         }
       }
     }
+  }
 
+  saveButton(String loc) async {
     for (var seq in _seqs) {
       if (seq.saved) {
         seq.rates.last.wasSaved = true;
@@ -226,6 +231,7 @@ class SeqProvider extends ChangeNotifier {
   }
 
   makeVisitList() {
+    _visitList.clear();
     for (var i = 0; i < _seqs.length; i++) {
       {
         if (_seqs[i].saved) {

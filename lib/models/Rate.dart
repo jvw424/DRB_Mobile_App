@@ -9,9 +9,10 @@ class Rate extends ChangeNotifier {
   int voids;
   int validations;
   int credits;
-  Map<int, int> shortTimes;
+  Map<String, int> shortTimes;
   List<String> attendants;
   String closeTimes;
+  String supervisor;
   int pickup;
   int cash;
   int creditTotal;
@@ -26,11 +27,12 @@ class Rate extends ChangeNotifier {
     this.voids = 0,
     this.validations = 0,
     this.credits = 0,
-    required Map<int, int> shortTimes,
+    required Map<String, int> shortTimes,
     required List<String> attendants,
     this.cash = 0,
     this.creditTotal = 0,
     this.closeTimes = '',
+    this.supervisor = '',
     this.pickup = 0,
     this.wasSaved = false,
   })  : attendants = attendants ?? [],
@@ -46,14 +48,15 @@ class Rate extends ChangeNotifier {
         voids: data['voids'],
         validations: data['validations'],
         credits: data['credits'],
-        shortTimes: data['shortTimes'].map<int, int>(
-          (key, value) => MapEntry<int, int>(int.parse(key), int.parse(value)),
+        shortTimes: data['shortTimes'].map<String, int>(
+          (key, value) => MapEntry<String, int>(key, value),
         ),
         attendants: data['attendants'].cast<String>(),
         cash: data['cash'],
         creditTotal: data['creditTotal'],
         closeTimes: data['closeTimes'],
         pickup: data['pickup'],
+        supervisor: data['supervisor'],
         wasSaved: data['wasSaved']);
   }
 
@@ -73,6 +76,7 @@ class Rate extends ChangeNotifier {
         'closeTimes': closeTimes,
         'pickup': pickup,
         'wasSaved': wasSaved,
+        'supervisor': supervisor,
       };
 
   @override

@@ -81,7 +81,7 @@ class RateView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                              'Cash Pickup \$${seq.getSeqs[idx].rates[index].pickup.toString()}'),
+                              'Cash Pickup \$${seq.getSeqs[idx].rates[index].pickup.toString()} - ${seq.getSeqs[idx].rates[index].supervisor}'),
                         ],
                       ),
                       const SizedBox(
@@ -195,15 +195,18 @@ class RateView extends StatelessWidget {
                                 // },
 
                                 onChanged: (val) {
-                                  seq.editRate(int.parse(val), idx);
+                                  if (val != '' || val.isNotEmpty) {
+                                    seq.editRate(int.parse(val), idx);
+                                  }
                                 },
                                 onFieldSubmitted: (val) {
-                                  seq.editRate(int.parse(val), idx);
+                                  if (val != '' || val.isNotEmpty) {
+                                    seq.editRate(int.parse(val), idx);
+                                  }
                                 },
                                 keyboardType: TextInputType.phone,
                                 validator: (val) =>
-                                    int.tryParse(val!) == null ||
-                                            int.tryParse(val)! <= 0
+                                    val!.isEmpty || int.tryParse(val)! <= 0
                                         ? "Enter Valid Rate"
                                         : null,
                                 decoration: const InputDecoration(
@@ -225,7 +228,7 @@ class RateView extends StatelessWidget {
                                         enableInteractiveSelection: false,
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
-                                        enabled: false,
+                                        readOnly: true,
                                         style: const TextStyle(
                                             color: Colors.black45),
                                         textAlign: TextAlign.center,
@@ -234,11 +237,6 @@ class RateView extends StatelessWidget {
                                           FilteringTextInputFormatter.digitsOnly
                                         ],
                                         keyboardType: TextInputType.phone,
-                                        validator: (val) =>
-                                            int.tryParse(val!) == null ||
-                                                    int.tryParse(val)! < 0
-                                                ? "Enter Valid Start Number"
-                                                : null,
                                         decoration: const InputDecoration(
                                             labelText: 'Start Number',
                                             icon: FaIcon(
@@ -260,30 +258,26 @@ class RateView extends StatelessWidget {
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       textAlign: TextAlign.center,
-                                      //controller: endNumController,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly
                                       ],
-                                      // onTap: () {
-                                      //   endNumController.clear();
-                                      // },
-
                                       onChanged: (val) {
-                                        seq.editEndNum(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editEndNum(int.parse(val), idx);
+                                        }
                                       },
                                       onFieldSubmitted: (val) {
-                                        seq.editEndNum(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editEndNum(int.parse(val), idx);
+                                        }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) =>
-                                          int.tryParse(val!) == null ||
-                                                  int.tryParse(val)! <
-                                                      seq
-                                                          .getSeqs[idx]
-                                                          .rates[index]
-                                                          .startNumber
-                                              ? "Enter Valid End Number"
-                                              : null,
+                                      validator: (val) => val!.isEmpty ||
+                                              int.tryParse(val)! <
+                                                  seq.getSeqs[idx].rates[index]
+                                                      .startNumber
+                                          ? "Enter Valid End Number"
+                                          : null,
                                       decoration: const InputDecoration(
                                           labelText: 'End Number'),
                                     ),
@@ -305,18 +299,9 @@ class RateView extends StatelessWidget {
                                       enableInteractiveSelection: false,
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
-                                      enabled: false,
+                                      readOnly: true,
                                       textAlign: TextAlign.center,
-                                      //controller: startCodController,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) =>
-                                          int.tryParse(val!) == null ||
-                                                  int.tryParse(val)! < 0
-                                              ? "Enter Valid Start COD"
-                                              : null,
                                       style: const TextStyle(
                                           color: Colors.black45),
                                       decoration: const InputDecoration(
@@ -341,25 +326,23 @@ class RateView extends StatelessWidget {
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       textAlign: TextAlign.center,
-                                      //controller: endCodController,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly
                                       ],
-                                      // onTap: () {
-                                      //   endCodController.clear();
-                                      // },
                                       onChanged: (val) {
-                                        seq.editEndCod(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editEndCod(int.parse(val), idx);
+                                        }
                                       },
                                       onFieldSubmitted: (val) {
-                                        seq.editEndCod(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editEndCod(int.parse(val), idx);
+                                        }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) =>
-                                          int.tryParse(val!) == null ||
-                                                  int.tryParse(val)! < 0
-                                              ? "Enter Valid End COD"
-                                              : null,
+                                      validator: (val) => val!.isEmpty
+                                          ? "Enter Valid End COD"
+                                          : null,
                                       decoration: const InputDecoration(
                                           labelText: 'End Cod'),
                                     ),
@@ -380,23 +363,22 @@ class RateView extends StatelessWidget {
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 textAlign: TextAlign.center,
-                                //controller: creditController,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly
                                 ],
-                                // onTap: () {
-                                //   creditController.clear();
-                                // },
                                 onChanged: (val) {
-                                  seq.editCredits(int.parse(val), idx);
+                                  if (val != '' || val.isNotEmpty) {
+                                    seq.editCredits(int.parse(val), idx);
+                                  }
                                 },
                                 onFieldSubmitted: (val) {
-                                  seq.editCredits(int.parse(val), idx);
+                                  if (val != '' || val.isNotEmpty) {
+                                    seq.editCredits(int.parse(val), idx);
+                                  }
                                 },
                                 keyboardType: TextInputType.phone,
-                                validator: (val) => int.tryParse(val!) == null
-                                    ? "Enter Valid number of Credit Transactions"
-                                    : null,
+                                validator: (val) =>
+                                    val!.isEmpty ? "Enter Valid Credits" : null,
                                 decoration: const InputDecoration(
                                     labelText: 'Credits',
                                     icon: FaIcon(FontAwesomeIcons.creditCard)),
@@ -417,24 +399,23 @@ class RateView extends StatelessWidget {
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       textAlign: TextAlign.center,
-                                      //controller: voidController,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly
                                       ],
-                                      // onTap: () {
-                                      //   voidController.clear();
-                                      // },
                                       onChanged: (val) {
-                                        seq.editVoids(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editVoids(int.parse(val), idx);
+                                        }
                                       },
                                       onFieldSubmitted: (val) {
-                                        seq.editVoids(int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editVoids(int.parse(val), idx);
+                                        }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) =>
-                                          int.tryParse(val!) == null
-                                              ? "Enter a valid number of voids"
-                                              : null,
+                                      validator: (val) => val!.isEmpty
+                                          ? "Enter valid Voids"
+                                          : null,
                                       decoration: const InputDecoration(
                                           labelText: 'Voids',
                                           icon: FaIcon(FontAwesomeIcons.ban)),
@@ -456,24 +437,23 @@ class RateView extends StatelessWidget {
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       textAlign: TextAlign.center,
-                                      //controller: validationController,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly
                                       ],
-                                      // onTap: () {
-                                      //   validationController.clear();
-                                      // },
                                       onChanged: (val) {
-                                        seq.editValidations(
-                                            int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editValidations(
+                                              int.parse(val), idx);
+                                        }
                                       },
                                       onFieldSubmitted: (val) {
-                                        seq.editValidations(
-                                            int.parse(val), idx);
+                                        if (val != '' || val.isNotEmpty) {
+                                          seq.editValidations(
+                                              int.parse(val), idx);
+                                        }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) => int.tryParse(val!) ==
-                                              null
+                                      validator: (val) => val!.isEmpty
                                           ? "Enter Valid number of Validations"
                                           : null,
                                       decoration: const InputDecoration(

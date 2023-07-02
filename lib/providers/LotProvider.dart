@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drb_app/models/LotLocations.dart';
+import 'package:drb_app/models/Rate.dart';
 import 'package:flutter/material.dart';
 
 class LotProvider extends ChangeNotifier {

@@ -19,57 +19,57 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final authServ = Provider.of<AuthService>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Perfect Parking Login'),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: emailTextController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 32.0, right: 32, top: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 100,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * .15,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      fit: BoxFit.none,
+                      image: AssetImage('assets/PP_logo.png'))),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TextField(
+              controller: emailTextController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
               ),
-
-              const SizedBox(height: 16),
-              TextField(
-                keyboardType: TextInputType.phone,
-                controller: passwordTextController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: false,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              keyboardType: TextInputType.visiblePassword,
+              controller: passwordTextController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  await authServ.signIn(emailTextController.text.trim(),
-                      passwordTextController.text.trim());
-                },
-                icon: const Icon(Icons.login),
-                label: const Text("Sign in"),
-              ),
-
-              // ),
-              // TextButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => const MessagesPage()));
-              //   },
-              //   child: const Text('Read Messages as Guest'),
-              // ),
-              const SizedBox(height: 16),
-            ],
-          ),
+              obscureText: false,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await authServ.signIn(emailTextController.text.trim(),
+                    passwordTextController.text.trim());
+              },
+              icon: const Icon(Icons.login),
+              label: const Text("Sign in"),
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );

@@ -4,7 +4,9 @@ import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
 import 'package:drb_app/providers/AttendantProvider.dart';
 import 'package:drb_app/providers/SeqProvider.dart';
-import 'package:drb_app/widgets/RateView.dart';
+import 'package:drb_app/providers/SubmitProvider.dart';
+import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/drb_route/RateView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -260,7 +262,7 @@ class RateEditor extends StatelessWidget {
                             setState(() => {});
                           },
                           child: newSeqTime == null
-                              ? const Text('Pick Time')
+                              ? const Text('CC Start')
                               : Text(DateFormat('h:mm a M/d/yy')
                                   .format(newSeqTime!))),
                       Column(
@@ -296,7 +298,6 @@ class RateEditor extends StatelessWidget {
                                             ElevatedButton(
                                               onPressed: () {
                                                 prevSelectedTime = credTime;
-                                                print(prevSelectedTime);
                                                 setState(
                                                     () => prevSelected = index);
                                               },
@@ -681,6 +682,8 @@ class RateEditor extends StatelessWidget {
     BuildContext context,
   ) {
     final seqProv = Provider.of<SeqProvider>(context, listen: false);
+    final subProv = Provider.of<SubmitProvider>(context, listen: false);
+
     TextEditingController pickupTextController = TextEditingController();
     Set times = {};
     List<DateTime?> inputTimes = [];
@@ -689,6 +692,9 @@ class RateEditor extends StatelessWidget {
       for (var rate in seq.rates) {
         if (rate.credits != 0) {
           times.add(seq.startCredit);
+        }
+        if (rate.closeTimes != '') {
+          times.remove(seq.startCredit);
         }
       }
     }
@@ -859,29 +865,34 @@ class RateEditor extends StatelessWidget {
                             alignment: Alignment
                                 .center, //set the button's child Alignment
                           ),
-                          onPressed: () {
-                            for (var time in inputTimes) {
-                              // ignore: unrelated_type_equality_checks
-                              if (time == 'null' || time == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text("Input End Times")));
+                          onPressed: () async {
+                            if (times.isNotEmpty) {
+                              for (var time in inputTimes) {
+                                // ignore: unrelated_type_equality_checks
+                                if (time == 'null' || time == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text("Input End Times")));
 
-                                return;
+                                  return;
+                                }
                               }
-                            }
 
-                            for (final pairs
-                                in IterableZip<dynamic>([times, inputTimes])) {
-                              if (DateFormat("h:mm a M/d/yy")
-                                  .parse(pairs[0])
-                                  .isAfter(pairs[1])) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text("Incorrect Dates")));
+                              for (final pairs in IterableZip<dynamic>(
+                                  [times, inputTimes])) {
+                                if (DateFormat("h:mm a M/d/yy")
+                                    .parse(pairs[0])
+                                    .isAfter(pairs[1])) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text("Incorrect Dates")));
 
-                                return;
+                                  return;
+                                }
                               }
+
+                              await seqProv.makeCloseTimes(
+                                  IterableZip<dynamic>([times, inputTimes]));
                             }
 
                             if (pickupTextController.text.trim() != '') {
@@ -891,14 +902,18 @@ class RateEditor extends StatelessWidget {
                                   count += 1;
                                 }
                               }
-                              seqProv.cashPickup(int.tryParse(
-                                      pickupTextController.text.trim())! ~/
-                                  count);
+
+                              var supervisor =
+                                  await subProv.getSupervisorName();
+
+                              seqProv.cashPickup(
+                                  int.tryParse(
+                                          pickupTextController.text.trim())! ~/
+                                      count,
+                                  supervisor);
                             }
 
-                            seqProv.saveButton(
-                                IterableZip<dynamic>([times, inputTimes]),
-                                location);
+                            seqProv.saveButton(location);
 
                             Navigator.popUntil(context,
                                 (Route<dynamic> route) => route.isFirst);
@@ -916,7 +931,9 @@ class RateEditor extends StatelessWidget {
         });
   }
 
-  Widget subbmissionOption(int color, BuildContext context) {
+  Widget submissionOption(int color, BuildContext context) {
+    final subProv = Provider.of<SubmitProvider>(context, listen: false);
+
     final seqProv = Provider.of<SeqProvider>(context, listen: false);
     if (seqProv.getVisited.isEmpty) {
       return ElevatedButton(
@@ -948,12 +965,22 @@ class RateEditor extends StatelessWidget {
             ],
           ),
           onPressed: () async {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => Submit(
-                          location: location,
-                        )));
+            if (seqProv.validCheck(idx)) {
+              await subProv.setInfo(seqProv.getSeqs, location);
+              await subProv.makeTable();
+
+              // ignore: use_build_context_synchronously
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Submit(
+                            location: location,
+                          )));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                      Text("Fix Rate ${seqProv.getSeqs[idx].rates.length}")));
+            }
           });
     } else {
       return ElevatedButton(
@@ -997,6 +1024,7 @@ class RateEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final lotProv = Provider.of<LotProvider>(context);
+
     final seqProv = Provider.of<SeqProvider>(context, listen: false);
     // final atProv = Provider.of<AttendantProvider>(context);
 
@@ -1149,7 +1177,7 @@ class RateEditor extends StatelessWidget {
                 ],
               ),
             ),
-            subbmissionOption(seqProv.getSeqs[idx].color, context),
+            submissionOption(seqProv.getSeqs[idx].color, context),
           ],
         ),
       ),

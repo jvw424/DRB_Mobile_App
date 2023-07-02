@@ -1,6 +1,8 @@
 import 'package:drb_app/Screens/drb_route/LocationSelector.dart';
 import 'package:drb_app/Screens/home/NavDrawer.dart';
 import 'package:drb_app/providers/LotProvider.dart';
+import 'package:drb_app/providers/SubmitProvider.dart';
+import 'package:drb_app/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -42,12 +44,16 @@ class HomePage extends StatelessWidget {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+    var a = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.medium,
+    );
+    return a;
   }
 
   @override
   Widget build(BuildContext context) {
     final lotProv = Provider.of<LotProvider>(context, listen: false);
+    final subProv = Provider.of<SubmitProvider>(context, listen: false);
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(title: const Text("DRB Home")),
@@ -90,7 +96,15 @@ class HomePage extends StatelessWidget {
                       fixedSize: const Size(300, 100),
                       backgroundColor: Colors.white),
                   onPressed: () async {
-                    _determinePosition();
+                    await subProv.fetchDrbs();
+
+                    print(subProv.getDrbs[0].seqs);
+
+                    // var a = await authService.getName();
+                    // print(a);
+                    // var loc = await _determinePosition();
+                    // print(loc.latitude);
+                    // print(loc.longitude);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

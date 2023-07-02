@@ -2,6 +2,7 @@ import 'package:drb_app/Screens/home/Wrapper.dart';
 import 'package:drb_app/providers/AttendantProvider.dart';
 import 'package:drb_app/providers/LotProvider.dart';
 import 'package:drb_app/providers/SeqProvider.dart';
+import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:drb_app/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SeqProvider>(create: (_) => SeqProvider()),
         ChangeNotifierProvider<AttendantProvider>(
             create: (_) => AttendantProvider()),
+        ChangeNotifierProvider<SubmitProvider>(create: (_) => SubmitProvider()),
       ],
       child: MaterialApp(
           title: 'Drb App',
@@ -41,20 +43,5 @@ class MyApp extends StatelessWidget {
             ),
           )),
     );
-    //   return StreamProvider<MyUser?>.value(
-    //     catchError: (_, __) => null,
-    //     initialData: null,
-    //value: AuthService().myuser,
-    // child: MaterialApp(
-    //     title: 'Drb App',
-    //     debugShowCheckedModeBanner: false,
-    //     home: const Wrapper(),
-    //     theme: ThemeData(
-    //       colorScheme: ColorScheme.fromSwatch().copyWith(
-    //         primary: const Color.fromARGB(255, 83, 120, 139),
-    //       ),
-    //     )),
-    //   );
-    // }
   }
 }

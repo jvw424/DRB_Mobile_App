@@ -393,7 +393,7 @@ class SequenceSelector extends StatelessWidget {
                         setState(() => {});
                       },
                       child: inputTime == null
-                          ? const Text('Pick Time')
+                          ? const Text('CC Start')
                           : Text(
                               DateFormat('h:mm a M/d/yy').format(inputTime!))),
                   Column(
@@ -427,7 +427,6 @@ class SequenceSelector extends StatelessWidget {
                                         ElevatedButton(
                                           onPressed: () {
                                             prevSelectedTime = credTime;
-                                            print(prevSelectedTime);
                                             setState(
                                                 () => prevSelected = index);
                                           },
@@ -623,7 +622,7 @@ class SequenceSelector extends StatelessWidget {
                     children: [
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black, //button's fill color
+                            //button's fill color
 
                             elevation: 4.0, //buttons Material shadow
 
@@ -639,7 +638,7 @@ class SequenceSelector extends StatelessWidget {
                                 Icons.navigate_next,
                               ),
                               Text(
-                                'Load Previously Saved Data',
+                                'Load Saved Data',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),

@@ -1,4 +1,5 @@
-import 'package:drb_app/globals.dart';
+import 'package:drb_app/services/globals.dart';
+import 'package:drb_app/providers/CheckProvider.dart';
 import 'package:drb_app/providers/SeqProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,19 +10,20 @@ class RateView extends StatelessWidget {
   int idx;
   RateView({super.key, required this.idx});
 
+  TextEditingController valController = TextEditingController();
+  TextEditingController quantController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<SeqProvider>(
       builder: (context, seq, child) {
         return ListView.builder(
             cacheExtent: 1000000,
-            padding:
-                const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 60),
+            padding: EdgeInsets.only(
+                bottom: kFloatingActionButtonMargin +
+                    MediaQuery.of(context).size.height * .2),
             itemCount: seq.getSeqs[idx].rates.length,
             itemBuilder: (context, index) {
-              TextEditingController valController = TextEditingController();
-              TextEditingController quantController = TextEditingController();
-
               String stringMaker() {
                 String all = '';
                 for (var attendant
@@ -37,11 +39,25 @@ class RateView extends StatelessWidget {
               }
 
               String shortTimeString() {
-                String all = '';
+                String st = '';
                 seq.getSeqs[idx].rates[index].shortTimes.forEach((val, quant) {
-                  all += "\$$val : $quant, ";
+                  st += "\$$val : $quant, ";
                 });
-                return all;
+                return st;
+              }
+
+              String ccShortTimeString() {
+                String cc = '';
+                if (seq.getSeqs[idx].rates[index].ccShortTimes.isEmpty) {
+                  return cc;
+                } else {
+                  cc = 'CC: ';
+                  seq.getSeqs[idx].rates[index].ccShortTimes
+                      .forEach((val, quant) {
+                    cc += "\$$val : $quant, ";
+                  });
+                  return cc;
+                }
               }
 
               Widget closeTime() {
@@ -91,38 +107,6 @@ class RateView extends StatelessWidget {
                   );
                 } else {
                   return const SizedBox.shrink();
-                }
-              }
-
-              Widget buttonControl() {
-                if (seq.getSeqs[idx].rates[index].shortTimes.isEmpty) {
-                  return const SizedBox.shrink();
-                } else {
-                  return Row(
-                    children: [
-                      const Expanded(flex: 3, child: Text('')),
-                      const SizedBox(
-                        width: 14,
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red),
-                            onPressed: () {
-                              seq.clearShortTime(idx);
-                            },
-                            child: const Text("Delete",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                )),
-                          )),
-                      const SizedBox(
-                        width: 14,
-                      ),
-                      const Expanded(flex: 3, child: Text('')),
-                    ],
-                  );
                 }
               }
 
@@ -190,9 +174,6 @@ class RateView extends StatelessWidget {
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly
                                 ],
-                                // onTap: () {
-                                //   rateController.clear();
-                                // },
 
                                 onChanged: (val) {
                                   if (val != '' || val.isNotEmpty) {
@@ -340,7 +321,28 @@ class RateView extends StatelessWidget {
                                         }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) => val!.isEmpty
+                                      validator: (val) => val!.isEmpty ||
+                                              int.tryParse(val)! -
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .startCod +
+                                                      seq.getSeqs[idx]
+                                                          .rates[index].voids +
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .validations +
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .credits >
+                                                  seq.getSeqs[idx].rates[index]
+                                                          .endNumber -
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .startNumber
                                           ? "Enter Valid End COD"
                                           : null,
                                       decoration: const InputDecoration(
@@ -377,8 +379,24 @@ class RateView extends StatelessWidget {
                                   }
                                 },
                                 keyboardType: TextInputType.phone,
-                                validator: (val) =>
-                                    val!.isEmpty ? "Enter Valid Credits" : null,
+                                validator: (val) => val!.isEmpty ||
+                                        int.tryParse(val)! +
+                                                seq.getSeqs[idx].rates[index]
+                                                    .voids +
+                                                seq.getSeqs[idx].rates[index]
+                                                    .validations +
+                                                (seq.getSeqs[idx].rates[index]
+                                                        .endCod -
+                                                    seq
+                                                        .getSeqs[idx]
+                                                        .rates[index]
+                                                        .startCod) >
+                                            seq.getSeqs[idx].rates[index]
+                                                    .endNumber -
+                                                seq.getSeqs[idx].rates[index]
+                                                    .startNumber
+                                    ? "Enter Valid Credits"
+                                    : null,
                                 decoration: const InputDecoration(
                                     labelText: 'Credits',
                                     icon: FaIcon(FontAwesomeIcons.creditCard)),
@@ -413,7 +431,30 @@ class RateView extends StatelessWidget {
                                         }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) => val!.isEmpty
+                                      validator: (val) => val!.isEmpty ||
+                                              int.tryParse(val)! +
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .credits +
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .validations +
+                                                      (seq
+                                                              .getSeqs[idx]
+                                                              .rates[index]
+                                                              .endCod -
+                                                          seq
+                                                              .getSeqs[idx]
+                                                              .rates[index]
+                                                              .startCod) >
+                                                  seq.getSeqs[idx].rates[index]
+                                                          .endNumber -
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .startNumber
                                           ? "Enter valid Voids"
                                           : null,
                                       decoration: const InputDecoration(
@@ -453,7 +494,28 @@ class RateView extends StatelessWidget {
                                         }
                                       },
                                       keyboardType: TextInputType.phone,
-                                      validator: (val) => val!.isEmpty
+                                      validator: (val) => val!.isEmpty ||
+                                              int.tryParse(val)! +
+                                                      seq.getSeqs[idx]
+                                                          .rates[index].voids +
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .credits +
+                                                      (seq
+                                                              .getSeqs[idx]
+                                                              .rates[index]
+                                                              .endCod -
+                                                          seq
+                                                              .getSeqs[idx]
+                                                              .rates[index]
+                                                              .startCod) >
+                                                  seq.getSeqs[idx].rates[index]
+                                                          .endNumber -
+                                                      seq
+                                                          .getSeqs[idx]
+                                                          .rates[index]
+                                                          .startNumber
                                           ? "Enter Valid number of Validations"
                                           : null,
                                       decoration: const InputDecoration(
@@ -481,7 +543,14 @@ class RateView extends StatelessWidget {
                                               color: Colors.grey[700])),
                                       Consumer<SeqProvider>(
                                         builder: (context, value, child) {
-                                          return Text(shortTimeString());
+                                          return Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(shortTimeString()),
+                                              Text(ccShortTimeString()),
+                                            ],
+                                          );
                                         },
                                       )
                                     ],
@@ -530,12 +599,19 @@ class RateView extends StatelessWidget {
                                           width: 14,
                                         ),
                                         Expanded(
-                                            flex: 2,
+                                            flex: 3,
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
                                                   backgroundColor: wList[
                                                       seq.getSeqs[idx].color]),
                                               onPressed: () {
+                                                final checkProv =
+                                                    Provider.of<CheckProvider>(
+                                                        context,
+                                                        listen: false);
+
+                                                print(checkProv.isChecked);
+
                                                 if (valController.text == '' ||
                                                     quantController.text ==
                                                         '') {
@@ -543,20 +619,65 @@ class RateView extends StatelessWidget {
                                                 }
 
                                                 seq.addShortTime(
+                                                    isCC: checkProv.isChecked,
                                                     val: int.parse(
                                                         valController.text),
                                                     quant: int.parse(
                                                         quantController.text),
                                                     idx: idx);
+
+                                                valController.clear();
+                                                quantController.clear();
                                               },
                                               child: const Text("Submit",
                                                   style: TextStyle(
+                                                    fontSize: 10,
                                                     color: Colors.black,
                                                   )),
                                             )),
                                       ],
                                     ),
-                                    buttonControl(),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 4,
+                                          child: Consumer<CheckProvider>(
+                                            builder: (context, checkboxProvider,
+                                                    _) =>
+                                                CheckboxListTile(
+                                              checkColor: Colors.black,
+                                              activeColor:
+                                                  wList[seq.getSeqs[idx].color],
+                                              title: Text('CC Refund'),
+                                              value: checkboxProvider.isChecked,
+                                              onChanged: (value) {
+                                                checkboxProvider.isChecked =
+                                                    value ?? true;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                            flex: 3,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 20.0),
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.red),
+                                                onPressed: () {
+                                                  seq.clearShortTime(idx);
+                                                },
+                                                child: const Text("clear",
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.white,
+                                                    )),
+                                              ),
+                                            )),
+                                      ],
+                                    ),
                                   ],
                                 )),
                             Padding(

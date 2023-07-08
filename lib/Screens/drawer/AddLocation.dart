@@ -33,10 +33,30 @@ class _AddLocationState extends State<AddLocation> {
   final longTextController = TextEditingController();
 
   @override
+  void dispose() {
+    nameTextController.dispose();
+    numberTextController.dispose();
+    addressTextController.dispose();
+    streetTextController.dispose();
+    cityTextController.dispose();
+    stateTextController.dispose();
+    zipTextController.dispose();
+    latTextController.dispose();
+    longTextController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final lotProv = Provider.of<LotProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            }),
         title: const Text('Add New Location'),
       ),
       body: Padding(

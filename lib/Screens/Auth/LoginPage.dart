@@ -1,4 +1,4 @@
-import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +14,14 @@ class _LoginPageState extends State<LoginPage> {
   final passwordTextController = TextEditingController();
 
   bool loading = false;
+
+  @override
+  void dispose() {
+    // dispose the controllers so they don't display values on the login screen after logging out
+    emailTextController.dispose();
+    passwordTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

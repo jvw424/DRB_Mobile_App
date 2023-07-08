@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Submit extends StatelessWidget {
-  String location;
+  LotLocation location;
   Submit({super.key, required this.location});
 
   TextEditingController depositController = TextEditingController(text: '0');
@@ -22,10 +23,10 @@ class Submit extends StatelessWidget {
         String sups = '';
         for (var a in subProv.getSubmit!.pickupSups!) {
           if (a == subProv.getSubmit!.pickupSups!.last) {
-            var arr = a.split(' ');
+            var arr = a!.split(' ');
             sups += (arr[0]);
           } else {
-            var arr = a.split(' ');
+            var arr = a!.split(' ');
             sups += (arr[0]) + ", ";
           }
         }
@@ -34,6 +35,7 @@ class Submit extends StatelessWidget {
           children: [
             Flexible(
               child: TextFormField(
+                  enableInteractiveSelection: false,
                   initialValue: sups,
                   readOnly: true,
                   style: const TextStyle(fontSize: 12, color: Colors.black),
@@ -47,6 +49,7 @@ class Submit extends StatelessWidget {
             ),
             Flexible(
               child: TextFormField(
+                  enableInteractiveSelection: false,
                   initialValue: subProv.getSubmit!.pickUpTotal.toString(),
                   readOnly: true,
                   textAlign: TextAlign.center,
@@ -74,7 +77,7 @@ class Submit extends StatelessWidget {
             },
           ),
           title: Text(
-            '$location Submission',
+            '${location.name} Submission',
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -91,31 +94,7 @@ class Submit extends StatelessWidget {
                       20.0)), // set the buttons shape. Make its birders rounded etc
               alignment: Alignment.center, //set the button's child Alignment
             ),
-            onPressed: () {
-              if (subProv.getSubmit!.ccStart!.isNotEmpty) {
-                for (var time in subProv.getSubmit!.ccEnd!) {
-                  // ignore: unrelated_type_equality_checks
-                  if (time == 'null' || time == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Input End Times")));
-
-                    return;
-                  }
-                }
-
-                for (int i = 0; i < subProv.getSubmit!.ccStart!.length; i++) {
-                  if (DateFormat("h:mm a M/d/yy")
-                      .parse(subProv.getSubmit!.ccStart!.elementAt(i))
-                      .isAfter(DateFormat("h:mm a M/d/yy")
-                          .parse(subProv.getSubmit!.ccEnd![i]!))) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Incorrect Dates")));
-
-                    return;
-                  }
-                }
-              }
-
+            onPressed: () async {
               if (subProv.getSubmit!.depositTotal == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Input Deposit")));
@@ -129,7 +108,36 @@ class Submit extends StatelessWidget {
                 return;
               }
 
-              subProv.submitDrb();
+              if (subProv.getSubmit!.ccStart!.isNotEmpty) {
+                for (var time in subProv.getSubmit!.ccEnd!) {
+                  // ignore: unrelated_type_equality_checks
+                  if (time == 'null' || time == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Input End Times")));
+
+                    return;
+                  }
+                }
+
+                for (int i = 0; i < subProv.getSubmit!.ccStart!.length; i++) {
+                  if (DateFormat("h:mm a M/d/yy")
+                      .parse(subProv.getSubmit!.ccStart![i]!)
+                      .isAfter(DateFormat("h:mm a M/d/yy")
+                          .parse(subProv.getSubmit!.ccEnd![i]!))) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Incorrect Dates")));
+
+                    return;
+                  }
+                }
+              }
+
+              await subProv.submitDrb();
+
+              Navigator.popUntil(
+                  context, (Route<dynamic> route) => route.isFirst);
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Saved Successfully")));
             },
             child: const Text(
               'Submit DRB',
@@ -200,6 +208,8 @@ class Submit extends StatelessWidget {
                                                         .getSubmit!.overShort
                                                         .toString());
                                             return TextFormField(
+                                                enableInteractiveSelection:
+                                                    false,
                                                 readOnly: true,
                                                 controller: overShortController,
                                                 textAlign: TextAlign.center,
@@ -232,6 +242,7 @@ class Submit extends StatelessWidget {
                                       child: Consumer<SubmitProvider>(
                                         builder: (context, subCon, child) {
                                           return TextFormField(
+                                            enableInteractiveSelection: false,
                                             autovalidateMode: AutovalidateMode
                                                 .onUserInteraction,
                                             textAlign: TextAlign.center,
@@ -288,6 +299,7 @@ class Submit extends StatelessWidget {
                                       padding: const EdgeInsets.only(
                                           bottom: 8.0, left: 8.0, right: 8.0),
                                       child: TextFormField(
+                                        enableInteractiveSelection: false,
                                         style: const TextStyle(
                                             fontSize: 12, color: Colors.black),
                                         textAlign: TextAlign.center,
@@ -384,8 +396,7 @@ class Submit extends StatelessWidget {
                                                       flex: 1,
                                                       child: Text(subProv
                                                           .getSubmit!
-                                                          .attendants!
-                                                          .elementAt(index)),
+                                                          .attendants![index]!),
                                                     ),
                                                     Flexible(
                                                       flex: 2,
@@ -584,6 +595,13 @@ class Submit extends StatelessWidget {
                                           color: Colors.black, width: 1),
                                       children: subProv.getTable)
                                 ],
+                              ),
+                              ExpansionTile(
+                                initiallyExpanded: false,
+                                title: Text('Notes',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey[700])),
+                                children: [],
                               ),
                             ],
                           ))))),

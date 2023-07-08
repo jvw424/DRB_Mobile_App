@@ -74,6 +74,7 @@ class SeqProvider extends ChangeNotifier {
         startCod: endCod,
         endCod: endCod,
         shortTimes: {},
+        ccShortTimes: {},
         attendants: ats));
 
     notifyListeners();
@@ -97,6 +98,14 @@ class SeqProvider extends ChangeNotifier {
       numShortTics += quant;
     });
 
+    int numccShortTics = 0;
+    int ccshortTimeValue = 0;
+
+    curRate.ccShortTimes.forEach((price, quant) {
+      ccshortTimeValue += int.parse(price) * quant;
+      numccShortTics += quant;
+    });
+
     int ticTotal = curRate.endNumber -
         curRate.startNumber +
         curRate.startCod -
@@ -108,7 +117,8 @@ class SeqProvider extends ChangeNotifier {
 
     curRate.cash = curRate.rate * ticTotal + shortTimeValue;
 
-    curRate.creditTotal = curRate.rate * curRate.credits;
+    curRate.creditTotal =
+        curRate.rate * (curRate.credits - numccShortTics) + ccshortTimeValue;
   }
 
   bool validCheck(int idx) {
@@ -118,7 +128,10 @@ class SeqProvider extends ChangeNotifier {
       return false;
     }
     if ((curRate.endNumber - curRate.startNumber) -
-            (curRate.voids + curRate.credits + curRate.validations) <=
+            (curRate.voids +
+                curRate.credits +
+                curRate.validations +
+                (curRate.startCod - curRate.endCod)) <
         0) {
       return false;
     }
@@ -161,9 +174,17 @@ class SeqProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addShortTime({required int val, required int quant, required int idx}) {
-    //print(_seqs[idx].rates.last.attendants.runtimeType);
-    _seqs[idx].rates.last.shortTimes[val.toString()] = quant;
+  addShortTime(
+      {required bool isCC,
+      required int val,
+      required int quant,
+      required int idx}) {
+    print(isCC);
+    if (isCC) {
+      _seqs[idx].rates.last.ccShortTimes[val.toString()] = quant;
+    } else {
+      _seqs[idx].rates.last.shortTimes[val.toString()] = quant;
+    }
 
     applyChanges(idx);
     notifyListeners();
@@ -171,6 +192,7 @@ class SeqProvider extends ChangeNotifier {
 
   clearShortTime(int idx) {
     _seqs[idx].rates.last.shortTimes.clear();
+    _seqs[idx].rates.last.ccShortTimes.clear();
     applyChanges(idx);
     notifyListeners();
   }

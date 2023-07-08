@@ -1,5 +1,6 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:drb_app/Screens/drb_route/RateEditor.dart';
+import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
 import 'package:drb_app/providers/AttendantProvider.dart';
@@ -12,7 +13,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class SequenceSelector extends StatelessWidget {
-  final String location;
+  final LotLocation location;
   SequenceSelector({
     super.key,
     required this.location,
@@ -20,7 +21,7 @@ class SequenceSelector extends StatelessWidget {
 
   final GlobalKey<AutoCompleteTextFieldState<String>> textKey = GlobalKey();
 
-  int colSelected = 10;
+  int colSelected = 0;
   TextEditingController newSeqNum = TextEditingController(text: '');
   TextEditingController newSeqStartCod = TextEditingController(text: '');
   int? prevSelected;
@@ -225,7 +226,7 @@ class SequenceSelector extends StatelessWidget {
                                 .center, //set the button's child Alignment
                           ),
                           onPressed: () async {
-                            seqProv.deleteSeqs(dIndex, location);
+                            seqProv.deleteSeqs(dIndex, location.name);
                             Navigator.pop(context);
                           },
                           child: const Text('Delete'))
@@ -267,7 +268,7 @@ class SequenceSelector extends StatelessWidget {
         height: MediaQuery.of(context).size.height * .15,
         width: MediaQuery.of(context).size.width * .8,
         child: MaterialColorPicker(
-          selectedColor: colSelected > 7 ? null : cols[colSelected],
+          selectedColor: cols[colSelected],
           allowShades: false,
           colors: cols,
           onMainColorChange: (value) {
@@ -567,22 +568,23 @@ class SequenceSelector extends StatelessWidget {
                                 prevSelectedTime = DateFormat('h:mm a M/d/yy')
                                     .format(inputTime!);
                               }
-
                               Sequence newSeq = Sequence(
-                                  rates: [
-                                    Rate(
-                                      startNumber:
-                                          int.parse(newSeqNum.text.trim()),
-                                      startCod:
-                                          int.parse(newSeqStartCod.text.trim()),
-                                      shortTimes: {},
-                                      attendants: [],
-                                    )
-                                  ],
-                                  startCredit: prevSelectedTime!,
-                                  color: colSelected);
+                                rates: [
+                                  Rate(
+                                    startNumber:
+                                        int.parse(newSeqNum.text.trim()),
+                                    startCod:
+                                        int.parse(newSeqStartCod.text.trim()),
+                                    shortTimes: {},
+                                    ccShortTimes: {},
+                                    attendants: [],
+                                  )
+                                ],
+                                startCredit: prevSelectedTime!,
+                                color: colSelected,
+                              );
 
-                              seqProv.addSeqs(seq: newSeq, loc: location);
+                              seqProv.addSeqs(seq: newSeq, loc: location.name);
 
                               Navigator.pop(context);
                               FocusScope.of(context).unfocus();
@@ -610,7 +612,7 @@ class SequenceSelector extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("$location Sequences"),
+        title: Text("${location.name} Sequences"),
       ),
       body: seqProv.getVisited.isNotEmpty
           ? Container(
@@ -792,7 +794,7 @@ class SequenceSelector extends StatelessWidget {
                               onPressed: () {
                                 newSeqStartCod.clear();
                                 newSeqNum.clear();
-                                colSelected = 10;
+                                colSelected = 0;
                                 prevSelected = null;
                                 prevSelectedTime = null;
                                 inputTime = null;

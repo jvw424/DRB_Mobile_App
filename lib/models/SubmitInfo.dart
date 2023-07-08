@@ -3,6 +3,7 @@ import 'package:drb_app/models/Sequence.dart';
 class SubmitInfo {
   List<Sequence> seqs;
   String location;
+  int lotNum;
   int? cashTot;
   int? credTot;
   int overShort;
@@ -10,17 +11,19 @@ class SubmitInfo {
   int? pickUpTotal;
   String? supervisor;
   String? bagNum;
-  Set? pickupSups;
-  Set? attendants;
-  Set? ccStart;
+  List<String?>? pickupSups;
+  List<String?>? attendants;
+  List<String?>? ccStart;
   List<String?>? ccEnd;
   List<String?>? startTimes;
   List<String?>? endTimes;
-  String? submitDate;
+  String? notes;
+  DateTime? submitDate;
 
   SubmitInfo({
     required this.seqs,
     required this.location,
+    required this.lotNum,
     this.cashTot,
     this.credTot,
     this.ccStart,
@@ -35,6 +38,7 @@ class SubmitInfo {
     this.bagNum,
     this.depositTotal,
     this.submitDate,
+    this.notes,
   });
 
   factory SubmitInfo.fromMap(Map data) {
@@ -47,6 +51,7 @@ class SubmitInfo {
     return SubmitInfo(
       seqs: fromMap,
       location: data['location'],
+      lotNum: data['lotNum'],
       cashTot: data['cashTot'],
       credTot: data['credTot'],
       overShort: data['overShort'],
@@ -54,13 +59,14 @@ class SubmitInfo {
       pickUpTotal: data['pickUpTotal'],
       supervisor: data['supervisor'],
       bagNum: data['bagNum'],
-      pickupSups: data['pickupSups'],
-      attendants: data['attendants'],
-      ccStart: data['ccStart'],
-      ccEnd: data['ccEnd'],
-      startTimes: data['startTimes'],
-      endTimes: data['endTimes'],
-      submitDate: data['submitDate'],
+      pickupSups: data['pickupSups'].cast<String>(),
+      attendants: data['attendants'].cast<String>(),
+      ccStart: data['ccStart'].cast<String>(),
+      ccEnd: data['ccEnd'].cast<String>(),
+      startTimes: data['startTimes'].cast<String>(),
+      endTimes: data['endTimes'].cast<String>(),
+      submitDate: data['submitDate'].toDate(),
+      notes: data['notes'],
     );
   }
 
@@ -74,6 +80,7 @@ class SubmitInfo {
 
     rMap['seqs'] = sMap;
     rMap['location'] = location;
+    rMap['lotNum'] = lotNum;
     rMap['cashTot'] = cashTot;
     rMap['credTot'] = credTot;
     rMap['overShort'] = overShort;
@@ -88,6 +95,7 @@ class SubmitInfo {
     rMap['startTimes'] = startTimes;
     rMap['endTimes'] = endTimes;
     rMap['submitDate'] = submitDate;
+    rMap['notes'] = notes;
 
     return rMap;
   }

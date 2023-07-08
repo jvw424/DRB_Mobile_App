@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LocationSelctor extends StatelessWidget {
-  const LocationSelctor({
+  bool isLocated;
+  LocationSelctor({
+    required this.isLocated,
     super.key,
   });
 
@@ -55,7 +57,7 @@ class LocationSelctor extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => SequenceSelector(
-                                location: lots[index].name,
+                                location: lots[index],
                               )));
                 }),
           ),
@@ -64,56 +66,76 @@ class LocationSelctor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lotProv = Provider.of<LotProvider>(context, listen: false);
     final seqProv = Provider.of<SeqProvider>(context, listen: false);
     final atProv = Provider.of<AttendantProvider>(context, listen: false);
 
-    List<String> lots = [];
-    for (var lot in lotProv.getlots) {
-      lots.add(lot.name);
-    }
     GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
 
-    return Scaffold(
-        appBar: AppBar(title: const Text('Select Location')),
-        body: Column(
-          children: [
-            ListTile(
-              title: SimpleAutoCompleteTextField(
-                  style: const TextStyle(fontSize: 20),
-                  key: key,
-                  decoration:
-                      const InputDecoration(hintText: "Search Lot Name"),
-                  controller: TextEditingController(text: ""),
-                  suggestions: lots,
-                  submitOnSuggestionTap: true,
-                  clearOnSubmit: true,
-                  textSubmitted: (text) async {
-                    if (lots.contains(text)) {
-                      await atProv.fetchAts();
-                      atProv.clearSelectedAts();
-                      await seqProv.fetchSeqs(
-                        text,
-                      );
-                      await seqProv.makeVisitList();
+    return Consumer<LotProvider>(builder: (context, lotCon, child) {
+      return Scaffold(
+          appBar: AppBar(title: const Text('Select Location')),
+          body: isLocated
+              ? lotCon.getLocatedLots.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        Expanded(
+                            child:
+                                Center(child: lstView(lotCon.getLocatedLots)))
+                      ],
+                    )
+              : lotCon.getlots.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        isLocated
+                            ? SizedBox.shrink()
+                            : ListTile(
+                                leading: Icon(Icons.search),
+                                title: SimpleAutoCompleteTextField(
+                                    style: const TextStyle(fontSize: 20),
+                                    key: key,
+                                    decoration: const InputDecoration(
+                                        hintText: "Search Lot Name"),
+                                    controller: TextEditingController(text: ""),
+                                    suggestions: lotCon.getNames,
+                                    submitOnSuggestionTap: true,
+                                    clearOnSubmit: true,
+                                    textSubmitted: (text) async {
+                                      if (lotCon.getNames.contains(text)) {
+                                        await atProv.fetchAts();
+                                        atProv.clearSelectedAts();
+                                        await seqProv.fetchSeqs(
+                                          text,
+                                        );
+                                        await seqProv.makeVisitList();
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SequenceSelector(
-                                    location: text,
-                                  )));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Invalid Location")));
-                    }
-                  }),
-            ),
-            Expanded(
-              child: Consumer<LotProvider>(
-                  builder: (context, prov, child) => lstView(prov.getlots)),
-            ),
-          ],
-        ));
+                                        LotLocation selected =
+                                            lotCon.getlots[0];
+                                        for (var lot in lotCon.getlots) {
+                                          if (lot.name == text) {
+                                            selected = lot;
+                                          }
+                                        }
+
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SequenceSelector(
+                                                      location: selected,
+                                                    )));
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content:
+                                                    Text("Invalid Location")));
+                                      }
+                                    }),
+                              ),
+                        Expanded(child: lstView(lotCon.getlots))
+                      ],
+                    ));
+    });
   }
 }

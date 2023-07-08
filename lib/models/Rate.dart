@@ -10,6 +10,7 @@ class Rate extends ChangeNotifier {
   int validations;
   int credits;
   Map<String, int> shortTimes;
+  Map<String, int> ccShortTimes;
   List<String> attendants;
   String closeTimes;
   String supervisor;
@@ -28,6 +29,7 @@ class Rate extends ChangeNotifier {
     this.validations = 0,
     this.credits = 0,
     required Map<String, int> shortTimes,
+    required Map<String, int> ccShortTimes,
     required List<String> attendants,
     this.cash = 0,
     this.creditTotal = 0,
@@ -36,6 +38,7 @@ class Rate extends ChangeNotifier {
     this.pickup = 0,
     this.wasSaved = false,
   })  : attendants = attendants ?? [],
+        ccShortTimes = ccShortTimes ?? {},
         shortTimes = shortTimes ?? {};
 
   factory Rate.fromMap(Map data) {
@@ -49,6 +52,9 @@ class Rate extends ChangeNotifier {
         validations: data['validations'],
         credits: data['credits'],
         shortTimes: data['shortTimes'].map<String, int>(
+          (key, value) => MapEntry<String, int>(key, value),
+        ),
+        ccShortTimes: data['ccShortTimes'].map<String, int>(
           (key, value) => MapEntry<String, int>(key, value),
         ),
         attendants: data['attendants'].cast<String>(),
@@ -70,6 +76,7 @@ class Rate extends ChangeNotifier {
         'validations': validations,
         'credits': credits,
         'shortTimes': shortTimes,
+        'ccShortTimes': ccShortTimes,
         'attendants': attendants,
         'cash': cash,
         'creditTotal': creditTotal,

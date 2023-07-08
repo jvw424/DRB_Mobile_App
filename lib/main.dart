@@ -1,14 +1,15 @@
-import 'package:drb_app/Screens/home/Wrapper.dart';
+import 'package:drb_app/Screens/Auth/Wrapper.dart';
 import 'package:drb_app/providers/AttendantProvider.dart';
+import 'package:drb_app/providers/CheckProvider.dart';
 import 'package:drb_app/providers/LotProvider.dart';
 import 'package:drb_app/providers/SeqProvider.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
-import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'package:drb_app/firebase_options.dart';
+import 'package:drb_app/services/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AttendantProvider>(
             create: (_) => AttendantProvider()),
         ChangeNotifierProvider<SubmitProvider>(create: (_) => SubmitProvider()),
+        ChangeNotifierProvider<CheckProvider>(create: (_) => CheckProvider()),
       ],
       child: MaterialApp(
           title: 'Drb App',

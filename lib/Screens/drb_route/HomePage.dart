@@ -1,8 +1,8 @@
 import 'package:drb_app/Screens/drb_route/LocationSelector.dart';
-import 'package:drb_app/Screens/home/NavDrawer.dart';
+import 'package:drb_app/Screens/drawer/NavDrawer.dart';
 import 'package:drb_app/providers/LotProvider.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
-import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,50 +10,9 @@ import 'package:geolocator/geolocator.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    var a = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.medium,
-    );
-    return a;
-  }
-
   @override
   Widget build(BuildContext context) {
     final lotProv = Provider.of<LotProvider>(context, listen: false);
-    final subProv = Provider.of<SubmitProvider>(context, listen: false);
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(title: const Text("DRB Home")),
@@ -71,7 +30,9 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LocationSelctor(),
+                          builder: (context) => LocationSelctor(
+                            isLocated: false,
+                          ),
                         ));
                   },
                   child: const Row(
@@ -95,16 +56,14 @@ class HomePage extends StatelessWidget {
                       ),
                       fixedSize: const Size(300, 100),
                       backgroundColor: Colors.white),
-                  onPressed: () async {
-                    await subProv.fetchDrbs();
-
-                    print(subProv.getDrbs[0].seqs);
-
-                    // var a = await authService.getName();
-                    // print(a);
-                    // var loc = await _determinePosition();
-                    // print(loc.latitude);
-                    // print(loc.longitude);
+                  onPressed: () {
+                    lotProv.locateLots();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              LocationSelctor(isLocated: true),
+                        ));
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

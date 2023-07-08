@@ -1,11 +1,11 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:drb_app/Screens/drb_route/Submit.dart';
+import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
 import 'package:drb_app/providers/AttendantProvider.dart';
 import 'package:drb_app/providers/SeqProvider.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
-import 'package:drb_app/services/AuthService.dart';
 import 'package:drb_app/Screens/drb_route/RateView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,7 @@ import 'package:collection/collection.dart';
 // ignore: must_be_immutable
 class RateEditor extends StatelessWidget {
   bool wasVisited;
-  String location;
+  LotLocation location;
   int idx;
   RateEditor({
     super.key,
@@ -28,9 +28,8 @@ class RateEditor extends StatelessWidget {
 
   GlobalKey<AutoCompleteTextFieldState<String>> autoKey = GlobalKey();
 
-  int colSelected = 10;
-  TextEditingController newSeqNum = TextEditingController(text: '');
-  TextEditingController newSeqStartCod = TextEditingController(text: '');
+  int colSelected = 0;
+
   int? prevSelected;
   DateTime? newSeqTime;
   String? prevSelectedTime;
@@ -57,13 +56,15 @@ class RateEditor extends StatelessWidget {
 
   createNewDialog(BuildContext context, List<String> newAts) {
     final seqProv = Provider.of<SeqProvider>(context, listen: false);
+    TextEditingController newSeqNum = TextEditingController(text: '');
+    TextEditingController newSeqStartCod = TextEditingController(text: '');
 
     Widget ticColor() {
       return SizedBox(
         height: MediaQuery.of(context).size.height * .15,
         width: MediaQuery.of(context).size.width * .8,
         child: MaterialColorPicker(
-          selectedColor: colSelected > 7 ? null : cols[colSelected],
+          selectedColor: cols[colSelected],
           allowShades: false,
           colors: cols,
           onMainColorChange: (value) {
@@ -446,20 +447,22 @@ class RateEditor extends StatelessWidget {
                               }
 
                               Sequence newSeq = Sequence(
-                                  rates: [
-                                    Rate(
-                                      startNumber:
-                                          int.parse(newSeqNum.text.trim()),
-                                      startCod:
-                                          int.parse(newSeqStartCod.text.trim()),
-                                      shortTimes: {},
-                                      attendants: newAts,
-                                    )
-                                  ],
-                                  startCredit: prevSelectedTime!,
-                                  color: colSelected);
+                                rates: [
+                                  Rate(
+                                    startNumber:
+                                        int.parse(newSeqNum.text.trim()),
+                                    startCod:
+                                        int.parse(newSeqStartCod.text.trim()),
+                                    shortTimes: {},
+                                    ccShortTimes: {},
+                                    attendants: newAts,
+                                  )
+                                ],
+                                startCredit: prevSelectedTime!,
+                                color: colSelected,
+                              );
 
-                              seqProv.addSeqs(seq: newSeq, loc: location);
+                              seqProv.addSeqs(seq: newSeq, loc: location.name);
 
                               int nextIdx = seqProv.getLastIdx;
                               seqProv.setSaved(nextIdx, true);
@@ -913,7 +916,7 @@ class RateEditor extends StatelessWidget {
                                   supervisor);
                             }
 
-                            seqProv.saveButton(location);
+                            seqProv.saveButton(location.name);
 
                             Navigator.popUntil(context,
                                 (Route<dynamic> route) => route.isFirst);
@@ -966,7 +969,8 @@ class RateEditor extends StatelessWidget {
           ),
           onPressed: () async {
             if (seqProv.validCheck(idx)) {
-              await subProv.setInfo(seqProv.getSeqs, location);
+              await subProv.setInfo(
+                  seqProv.getSeqs, location.name, location.number);
               await subProv.makeTable();
 
               // ignore: use_build_context_synchronously
@@ -1091,7 +1095,7 @@ class RateEditor extends StatelessWidget {
         ],
       ),
       body: RateView(idx: idx),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
         height: 50,
         margin: const EdgeInsets.all(10),

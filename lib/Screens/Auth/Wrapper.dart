@@ -1,6 +1,6 @@
 import 'package:drb_app/Screens/Auth/LoginPage.dart';
-import 'package:drb_app/Screens/home/HomePage.dart';
-import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/drb_route/HomePage.dart';
+import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,6 +1,10 @@
 import 'package:drb_app/Screens/drawer/AddLocation.dart';
-import 'package:drb_app/services/AuthService.dart';
+import 'package:drb_app/Screens/drawer/PastSubmissions.dart';
+import 'package:drb_app/Screens/drawer/Profile.dart';
+import 'package:drb_app/providers/SubmitProvider.dart';
+import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class NavDrawer extends StatelessWidget {
@@ -9,6 +13,8 @@ class NavDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authServ = Provider.of<AuthService>(context);
+    final subProv = Provider.of<SubmitProvider>(context, listen: false);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -22,10 +28,18 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.folder),
             title: const Text('Past Submissions'),
-            onTap: () => {},
+            onTap: () async {
+              subProv.fetchLots();
+              subProv.fetchInitialDrbs();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PastSubmissions(),
+                  ));
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.verified_user),
+            leading: const FaIcon(FontAwesomeIcons.plus),
             title: const Text('Add Location'),
             onTap: () => {
               Navigator.push(
@@ -36,13 +50,22 @@ class NavDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
+            leading: const FaIcon(FontAwesomeIcons.user),
             title: const Text('Profile'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () async {
+              var user = await subProv.getSupervisorName();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                      userName: user,
+                    ),
+                  ));
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.border_color),
-            title: const Text('Map'),
+            leading: const FaIcon(FontAwesomeIcons.clockRotateLeft),
+            title: const Text('Activity'),
             onTap: () => {},
           ),
           ListTile(
@@ -50,9 +73,6 @@ class NavDrawer extends StatelessWidget {
               title: const Text('Logout'),
               onTap: () async {
                 await authServ.signOut();
-                // Navigator.of(context).pushAndRemoveUntil(
-                //     MaterialPageRoute(builder: (context) => Wrapper()),
-                //     (route) => false);
               }),
         ],
       ),

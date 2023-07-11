@@ -453,6 +453,8 @@ class RateEditor extends StatelessWidget {
                                         int.parse(newSeqNum.text.trim()),
                                     startCod:
                                         int.parse(newSeqStartCod.text.trim()),
+                                    endCod:
+                                        int.parse(newSeqStartCod.text.trim()),
                                     shortTimes: {},
                                     ccShortTimes: {},
                                     attendants: newAts,

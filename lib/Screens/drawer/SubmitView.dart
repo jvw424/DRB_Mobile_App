@@ -415,6 +415,31 @@ class SubmitView extends StatelessWidget {
                                   children: subProv.getTable)
                             ],
                           ),
+                          ExpansionTile(
+                            maintainState: true,
+                            initiallyExpanded: subProv.getSubmit!.notes != null,
+                            title: Text('Notes',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[700])),
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 40, right: 40),
+                                child: TextFormField(
+                                  initialValue: subProv.getSubmit!.notes,
+                                  maxLines: 4,
+                                  enableInteractiveSelection: false,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black),
+                                  textAlign: TextAlign.center,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                      labelStyle: TextStyle(fontSize: 12),
+                                      icon: Icon(Icons.notes)),
+                                ),
+                              )
+                            ],
+                          ),
                         ],
                       ))))),
     ));

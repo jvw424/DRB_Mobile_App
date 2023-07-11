@@ -57,13 +57,13 @@ class HomePage extends StatelessWidget {
                       fixedSize: const Size(300, 100),
                       backgroundColor: Colors.white),
                   onPressed: () {
-                    lotProv.locateLots();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              LocationSelctor(isLocated: true),
-                        ));
+                    // lotProv.locateLots();
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) =>
+                    //           LocationSelctor(isLocated: true),
+                    //     ));
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

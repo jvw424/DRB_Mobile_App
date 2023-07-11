@@ -9,6 +9,8 @@ class LotProvider extends ChangeNotifier {
   List<LotLocation> _lots = [];
   List<LotLocation> _locatedLots = [];
 
+  bool _stillSearching = true;
+
   List<String> _names = [];
   Future fetchLots() async {
     try {
@@ -28,6 +30,7 @@ class LotProvider extends ChangeNotifier {
   }
 
   locateLots() async {
+    _stillSearching = true;
     _locatedLots.clear();
     notifyListeners();
 
@@ -40,6 +43,9 @@ class LotProvider extends ChangeNotifier {
       if (a < 600) {
         _locatedLots.add(lot);
       }
+    }
+    if (_locatedLots.isEmpty) {
+      _stillSearching = false;
     }
     notifyListeners();
   }
@@ -64,6 +70,10 @@ class LotProvider extends ChangeNotifier {
 
   List<String> get getNames {
     return _names;
+  }
+
+  bool get stillSearching {
+    return _stillSearching;
   }
 
   void notify() {

@@ -571,9 +571,13 @@ class SequenceSelector extends StatelessWidget {
                               Sequence newSeq = Sequence(
                                 rates: [
                                   Rate(
+                                    rate: 10,
                                     startNumber:
                                         int.parse(newSeqNum.text.trim()),
+                                    endNumber: int.parse(newSeqNum.text.trim()),
                                     startCod:
+                                        int.parse(newSeqStartCod.text.trim()),
+                                    endCod:
                                         int.parse(newSeqStartCod.text.trim()),
                                     shortTimes: {},
                                     ccShortTimes: {},

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
 import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
@@ -6,6 +9,8 @@ import 'package:drb_app/models/SubmitInfo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SubmitProvider extends ChangeNotifier {
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -16,10 +21,17 @@ class SubmitProvider extends ChangeNotifier {
   List<String> _lots = [];
 
   List<SubmitInfo> _drbs = [];
+  List<bool> _selectedDrbs = [];
+  List<String> _drbIds = [];
+
+  bool _stillSearching = true;
 
   Future fetchInitialDrbs() async {
     try {
-      _drbs = [];
+      _stillSearching = true;
+      _drbs.clear();
+      _selectedDrbs.clear();
+      _drbIds.clear();
       notifyListeners();
       QuerySnapshot snap = await db
           .collection('Submissions')
@@ -30,6 +42,12 @@ class SubmitProvider extends ChangeNotifier {
       for (var doc in snap.docs) {
         final res = SubmitInfo.fromMap(doc.data() as Map);
         _drbs.add(res);
+        _selectedDrbs.add(false);
+        _drbIds.add(doc.id);
+      }
+
+      if (_drbs.isEmpty) {
+        _stillSearching = false;
       }
       notifyListeners();
     } catch (e) {
@@ -39,7 +57,10 @@ class SubmitProvider extends ChangeNotifier {
 
   Future searchInitial(String text) async {
     try {
-      _drbs = [];
+      _stillSearching = true;
+      _drbs.clear();
+      _selectedDrbs.clear();
+      _drbIds.clear();
       notifyListeners();
 
       QuerySnapshot snap = await db
@@ -52,6 +73,11 @@ class SubmitProvider extends ChangeNotifier {
       for (var doc in snap.docs) {
         final res = await SubmitInfo.fromMap(doc.data() as Map);
         _drbs.add(res);
+        _selectedDrbs.add(false);
+        _drbIds.add(doc.id);
+      }
+      if (_drbs.isEmpty) {
+        _stillSearching = false;
       }
       notifyListeners();
     } catch (e) {
@@ -65,7 +91,10 @@ class SubmitProvider extends ChangeNotifier {
     DateTime d2,
   ) async {
     try {
-      _drbs = [];
+      _stillSearching = true;
+      _drbs.clear();
+      _selectedDrbs.clear();
+      _drbIds.clear();
       notifyListeners();
 
       QuerySnapshot snap = await db
@@ -79,11 +108,150 @@ class SubmitProvider extends ChangeNotifier {
       for (var doc in snap.docs) {
         final res = await SubmitInfo.fromMap(doc.data() as Map);
         _drbs.add(res);
+        _selectedDrbs.add(false);
+        _drbIds.add(doc.id);
+      }
+      if (_drbs.isEmpty) {
+        _stillSearching = false;
       }
       notifyListeners();
     } catch (e) {
       print(e);
     }
+  }
+
+  drbTap(int idx) {
+    _selectedDrbs[idx] = !_selectedDrbs[idx];
+    notifyListeners();
+  }
+
+  drbDelete() async {
+    for (var i = 0; i < _selectedDrbs.length; i++) {
+      if (_selectedDrbs[i]) {
+        await db.collection('Submissions').doc(_drbIds[i]).delete();
+        _drbs.removeAt(i);
+        _selectedDrbs.removeAt(i);
+        _drbIds.removeAt(i);
+      }
+    }
+    notifyListeners();
+  }
+
+  makeCSV() async {
+    List<List<dynamic>> csvList = [];
+
+    List<SubmitInfo> savedDrbs = [];
+
+    for (var i = 0; i < _selectedDrbs.length; i++) {
+      if (_selectedDrbs[i]) {
+        List<dynamic> header = [];
+        List<dynamic> r1 = [];
+
+        header.add('Date');
+        header.add('Cash');
+        header.add('Credit');
+        header.add('Deposit');
+        header.add('Over/Short');
+        header.add('Bag #');
+        header.add('Supervisor');
+        header.add('Attendants');
+        header.add('Shift Start');
+        header.add('Shift End');
+        header.add('CC Start');
+        header.add('CC End');
+        header.add('Notes');
+        header.add('Cash Pickup');
+        header.add('Pickup Supervisor');
+        header.add('Location');
+
+        r1.add(DateFormat('M/d/yy h:mm a').format(_drbs[i].submitDate!));
+        r1.add(_drbs[i].cashTot!);
+        r1.add(_drbs[i].credTot!);
+        r1.add(_drbs[i].depositTotal!);
+        r1.add(_drbs[i].overShort);
+        r1.add(_drbs[i].bagNum!);
+        r1.add(_drbs[i].supervisor!);
+        r1.add(_drbs[i].attendants!);
+        r1.add(_drbs[i].startTimes ?? null);
+        r1.add(_drbs[i].endTimes ?? null);
+        r1.add(_drbs[i].ccStart!);
+        r1.add(_drbs[i].ccEnd!);
+        r1.add(_drbs[i].notes ?? null);
+        r1.add(_drbs[i].pickUpTotal ?? null);
+        r1.add(_drbs[i].pickupSups ?? null);
+        r1.add(_drbs[i].location);
+
+        csvList.add(header);
+        csvList.add(r1);
+        savedDrbs.add(_drbs[i]);
+
+        for (var seqs in _drbs[i].seqs) {
+          for (var rate in seqs.rates) {
+            if (rate == seqs.rates.first) {
+              List<dynamic> rateHeader = [
+                '',
+              ];
+
+              rateHeader.add('Cash');
+              rateHeader.add('Credit');
+              rateHeader.add('Rate');
+              rateHeader.add('Start #');
+              rateHeader.add('End #');
+              rateHeader.add('# Credits');
+              rateHeader.add('Start COD');
+              rateHeader.add('End COD');
+              rateHeader.add('Voids');
+              rateHeader.add('Validations');
+              rateHeader.add('Short Times');
+              rateHeader.add('CC Short Times');
+
+              csvList.add(rateHeader);
+            }
+
+            List<dynamic> rateRow = [
+              '',
+            ];
+            rateRow.add(rate.cash);
+            rateRow.add(rate.creditTotal);
+            rateRow.add(rate.rate);
+            rateRow.add(rate.startNumber);
+            rateRow.add(rate.endNumber);
+            rateRow.add(rate.credits);
+            rateRow.add(rate.startCod);
+            rateRow.add(rate.endCod);
+            rateRow.add(rate.voids);
+            rateRow.add(rate.validations);
+            rateRow.add(rate.shortTimes);
+            rateRow.add(rate.ccShortTimes);
+
+            csvList.add(rateRow);
+          }
+        }
+      }
+    }
+    String csv = const ListToCsvConverter().convert(csvList);
+
+    String range = '';
+
+    if (savedDrbs.length > 1) {
+      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
+      range += ' - ';
+      range += DateFormat('M-d-yy').format(savedDrbs.last.submitDate!);
+    } else {
+      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
+    }
+
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+    ].request();
+
+    var directory = await (getExternalStorageDirectory());
+    final path = "${directory!.path}/${savedDrbs[0].location}_$range.csv";
+    print(path);
+    await File('$path').create(recursive: true);
+    final File file = File(path);
+    await file.writeAsString(csv);
+    print("file saved");
   }
 
   Future fetchLots() async {
@@ -565,6 +733,10 @@ class SubmitProvider extends ChangeNotifier {
     _submission!.bagNum = bagNum;
   }
 
+  notesInput(String notes) {
+    _submission!.notes = notes;
+  }
+
   startTimeInput(DateTime sTime, int idx) {
     _submission!.startTimes![idx] = DateFormat('h:mm a M/d/yy').format(sTime);
     notifyListeners();
@@ -580,12 +752,20 @@ class SubmitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get stillSearching {
+    return _stillSearching;
+  }
+
   List<String> get getLots {
     return _lots;
   }
 
   List<SubmitInfo> get getDrbs {
     return _drbs;
+  }
+
+  List<bool> get getSelectedDrbs {
+    return _selectedDrbs;
   }
 
   SubmitInfo? get getSubmit {

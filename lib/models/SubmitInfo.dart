@@ -1,25 +1,24 @@
 import 'package:drb_app/models/Sequence.dart';
 
 class SubmitInfo {
-  List<Sequence> seqs;
-  String location;
-  int lotNum;
-  int? cashTot;
-  int? credTot;
-  int overShort;
-  int? depositTotal;
-  int? pickUpTotal;
-  String? supervisor;
-  String? bagNum;
-  List<String?>? pickupSups;
-  List<String?>? attendants;
-  List<String?>? ccStart;
-  List<String?>? ccEnd;
-  List<String?>? startTimes;
-  List<String?>? endTimes;
-  String? notes;
-  DateTime? submitDate;
-
+  List<Sequence> seqs; //
+  String location; //
+  int lotNum; //
+  int? cashTot; //
+  int? credTot; //
+  int overShort; //
+  int? depositTotal; //
+  int? pickUpTotal; //
+  String? supervisor; //
+  String? bagNum; //
+  List<String?>? pickupSups; //
+  List<String?>? attendants; //
+  List<String?>? ccStart; //
+  List<String?>? ccEnd; //
+  List<String?>? startTimes; //
+  List<String?>? endTimes; //
+  String? notes; //
+  DateTime? submitDate; //
   SubmitInfo({
     required this.seqs,
     required this.location,

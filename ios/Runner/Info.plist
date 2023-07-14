@@ -49,6 +49,14 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
+
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is used guarantee presence.</string>
 	<key>NSLocationAlwaysUsageDescription</key>

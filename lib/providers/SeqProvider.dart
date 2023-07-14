@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:drb_app/models/Activity.dart';
 import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
+import 'package:drb_app/services/globals.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SeqProvider extends ChangeNotifier {
   FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   List<Sequence> _seqs = [];
   List<int> _visitList = [];
@@ -19,9 +23,13 @@ class SeqProvider extends ChangeNotifier {
       doc.data()!.forEach((key, value) {
         _seqs.add(Sequence.fromMap(value));
       });
-
-      //notifyListeners();
     } catch (e) {}
+  }
+
+  Future<String> getSupervisorName() async {
+    String uid = _firebaseAuth.currentUser!.uid;
+    var doc = await db.collection("Users").doc(uid).get();
+    return doc.data()!['Name'];
   }
 
   addSeqs({required Sequence seq, required String loc}) async {
@@ -39,10 +47,24 @@ class SeqProvider extends ChangeNotifier {
         .onError((e, _) => print("Error writing document: $e"));
 
     notifyListeners();
+
+    String sup = await getSupervisorName();
+
+    Activity curAct = Activity(
+        user: sup,
+        activity:
+            "$loc new Sequence Start #${seq.rates.last.startNumber} Color: ${colTranslate[seq.color.toString()]}",
+        when: DateTime.now());
+
+    await db
+        .collection("Activity")
+        .doc()
+        .set(curAct.toJson())
+        .onError((e, _) => print("Error writing document: $e"));
   }
 
   deleteSeqs(int idx, String loc) async {
-    _seqs.removeAt(idx);
+    Sequence seq = _seqs.removeAt(idx);
 
     Map<String, dynamic> sMap = {};
 
@@ -56,6 +78,20 @@ class SeqProvider extends ChangeNotifier {
         .onError((e, _) => print("Error writing document: $e"));
 
     notifyListeners();
+
+    String sup = await getSupervisorName();
+
+    Activity curAct = Activity(
+        user: sup,
+        activity:
+            "$loc deleted Sequence #${seq.rates.last.startNumber} Color: ${colTranslate[seq.color.toString()]}",
+        when: DateTime.now());
+
+    await db
+        .collection("Activity")
+        .doc()
+        .set(curAct.toJson())
+        .onError((e, _) => print("Error writing document: $e"));
   }
 
   ///

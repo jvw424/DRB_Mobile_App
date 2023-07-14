@@ -76,7 +76,11 @@ class LocationSelctor extends StatelessWidget {
           appBar: AppBar(title: const Text('Select Location')),
           body: isLocated
               ? lotCon.getLocatedLots.isEmpty
-                  ? Center(child: CircularProgressIndicator())
+                  ? lotCon.stillSearching
+                      ? Center(child: CircularProgressIndicator())
+                      : Center(
+                          child: Text('No Locations Found'),
+                        )
                   : Column(
                       children: [
                         Expanded(

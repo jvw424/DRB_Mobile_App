@@ -453,6 +453,8 @@ class RateEditor extends StatelessWidget {
                                         int.parse(newSeqNum.text.trim()),
                                     startCod:
                                         int.parse(newSeqStartCod.text.trim()),
+                                    endCod:
+                                        int.parse(newSeqStartCod.text.trim()),
                                     shortTimes: {},
                                     ccShortTimes: {},
                                     attendants: newAts,
@@ -1038,7 +1040,6 @@ class RateEditor extends StatelessWidget {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () async {
-              //await seqProv.fetchSeqs(location);
               if (wasVisited) {
                 seqProv.addToVisited(idx);
               } else {

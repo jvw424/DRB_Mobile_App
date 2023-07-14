@@ -24,7 +24,7 @@ class Rate extends ChangeNotifier {
     required this.startNumber,
     this.endNumber = 0,
     required this.startCod,
-    this.endCod = 0,
+    required this.endCod,
     this.voids = 0,
     this.validations = 0,
     this.credits = 0,

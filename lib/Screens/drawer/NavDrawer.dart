@@ -1,3 +1,4 @@
+import 'package:drb_app/Screens/drawer/ActivityView.dart';
 import 'package:drb_app/Screens/drawer/AddLocation.dart';
 import 'package:drb_app/Screens/drawer/PastSubmissions.dart';
 import 'package:drb_app/Screens/drawer/Profile.dart';
@@ -66,7 +67,14 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: const FaIcon(FontAwesomeIcons.clockRotateLeft),
             title: const Text('Activity'),
-            onTap: () => {},
+            onTap: () {
+              subProv.fetchInitialActs();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityView(),
+                  ));
+            },
           ),
           ListTile(
               leading: const Icon(Icons.exit_to_app),

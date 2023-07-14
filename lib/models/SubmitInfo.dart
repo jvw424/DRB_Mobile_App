@@ -19,7 +19,6 @@ class SubmitInfo {
   List<String?>? endTimes;
   String? notes;
   DateTime? submitDate;
-
   SubmitInfo({
     required this.seqs,
     required this.location,

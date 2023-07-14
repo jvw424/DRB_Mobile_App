@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';
@@ -597,11 +596,34 @@ class Submit extends StatelessWidget {
                                 ],
                               ),
                               ExpansionTile(
+                                maintainState: true,
                                 initiallyExpanded: false,
                                 title: Text('Notes',
                                     style: TextStyle(
                                         fontSize: 12, color: Colors.grey[700])),
-                                children: [],
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 40, right: 40),
+                                    child: TextFormField(
+                                      maxLines: 4,
+                                      enableInteractiveSelection: false,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.black),
+                                      textAlign: TextAlign.center,
+                                      onChanged: (val) {
+                                        subProv.notesInput(val);
+                                      },
+                                      onFieldSubmitted: (val) {
+                                        subProv.notesInput(val);
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      decoration: const InputDecoration(
+                                          labelStyle: TextStyle(fontSize: 12),
+                                          icon: Icon(Icons.notes)),
+                                    ),
+                                  )
+                                ],
                               ),
                             ],
                           ))))),

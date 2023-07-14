@@ -1,6 +1,5 @@
 import 'package:drb_app/Screens/drawer/RateView2.dart';
 import 'package:drb_app/Screens/drawer/SubmitView.dart';
-import 'package:drb_app/models/SubmitInfo.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

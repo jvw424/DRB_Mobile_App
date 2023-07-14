@@ -1,11 +1,8 @@
 import 'package:drb_app/Screens/drb_route/LocationSelector.dart';
 import 'package:drb_app/Screens/drawer/NavDrawer.dart';
 import 'package:drb_app/providers/LotProvider.dart';
-import 'package:drb_app/providers/SubmitProvider.dart';
-import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);

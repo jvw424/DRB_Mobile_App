@@ -1,10 +1,7 @@
 import 'package:drb_app/services/globals.dart';
 import 'package:drb_app/models/Sequence.dart';
-import 'package:drb_app/providers/SeqProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 class RateView2 extends StatelessWidget {
   Sequence seq;

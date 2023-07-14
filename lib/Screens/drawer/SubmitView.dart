@@ -1,10 +1,6 @@
-import 'package:collection/collection.dart';
-import 'package:drb_app/models/LotLocations.dart';
-import 'package:drb_app/models/SubmitInfo.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class SubmitView extends StatelessWidget {
@@ -413,6 +409,31 @@ class SubmitView extends StatelessWidget {
                                   border: TableBorder.all(
                                       color: Colors.black, width: 1),
                                   children: subProv.getTable)
+                            ],
+                          ),
+                          ExpansionTile(
+                            maintainState: true,
+                            initiallyExpanded: subProv.getSubmit!.notes != null,
+                            title: Text('Notes',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[700])),
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 40, right: 40),
+                                child: TextFormField(
+                                  initialValue: subProv.getSubmit!.notes,
+                                  maxLines: 4,
+                                  enableInteractiveSelection: false,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black),
+                                  textAlign: TextAlign.center,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                      labelStyle: TextStyle(fontSize: 12),
+                                      icon: Icon(Icons.notes)),
+                                ),
+                              )
                             ],
                           ),
                         ],

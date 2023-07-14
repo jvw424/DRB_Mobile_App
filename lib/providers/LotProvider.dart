@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drb_app/models/Activity.dart';
 import 'package:drb_app/models/LotLocations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LotProvider extends ChangeNotifier {
   FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   List<LotLocation> _lots = [];
   List<LotLocation> _locatedLots = [];
@@ -50,6 +53,12 @@ class LotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> getSupervisorName() async {
+    String uid = _firebaseAuth.currentUser!.uid;
+    var doc = await db.collection("Users").doc(uid).get();
+    return doc.data()!['Name'];
+  }
+
   addLocation(LotLocation lot) async {
     await db
         .collection("Locations")
@@ -58,6 +67,29 @@ class LotProvider extends ChangeNotifier {
         .onError((e, _) => print("Error writing document: $e"));
 
     notifyListeners();
+
+    String address = lot.address.toString() +
+        " " +
+        lot.street +
+        ', ' +
+        lot.city +
+        ', ' +
+        lot.state +
+        ' ' +
+        lot.zip.toString();
+
+    String sup = await getSupervisorName();
+
+    Activity curAct = Activity(
+        user: sup,
+        activity: "Added Location: ${lot.name}, ${lot.number} at $address",
+        when: DateTime.now());
+
+    await db
+        .collection("Activity")
+        .doc()
+        .set(curAct.toJson())
+        .onError((e, _) => print("Error writing document: $e"));
   }
 
   List<LotLocation> get getlots {

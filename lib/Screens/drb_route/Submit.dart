@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:drb_app/models/LotLocations.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';

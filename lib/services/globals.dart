@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 List<Color> wList = [
@@ -10,6 +9,16 @@ List<Color> wList = [
   Colors.grey[200]!,
   Colors.pink[100]!,
 ];
+
+Map<String, String> colTranslate = {
+  '0': 'red',
+  '1': 'orange',
+  '2': 'yellow',
+  '3': 'green',
+  '4': 'blue',
+  '5': 'grey',
+  '6': 'pink',
+};
 
 
 

@@ -1,10 +1,6 @@
-import 'package:collection/collection.dart';
-import 'package:drb_app/models/LotLocations.dart';
-import 'package:drb_app/models/SubmitInfo.dart';
 import 'package:drb_app/providers/SubmitProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class SubmitView extends StatelessWidget {

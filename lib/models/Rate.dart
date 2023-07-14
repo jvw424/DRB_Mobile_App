@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
 class Rate extends ChangeNotifier {
-  int rate; //
-  int startNumber; //
-  int endNumber; //
-  int startCod; //
-  int endCod; //
-  int voids; //
-  int validations; //
-  int credits; //
-  Map<String, int> shortTimes; //
-  Map<String, int> ccShortTimes; //
-  List<String> attendants; //
-  String closeTimes; //
-  String supervisor; //
-  int pickup; //
-  int cash; //
-  int creditTotal; //
-  bool wasSaved; //
+  int rate;
+  int startNumber;
+  int endNumber;
+  int startCod;
+  int endCod;
+  int voids;
+  int validations;
+  int credits;
+  Map<String, int> shortTimes;
+  Map<String, int> ccShortTimes;
+  List<String> attendants;
+  String closeTimes;
+  String supervisor;
+  int pickup;
+  int cash;
+  int creditTotal;
+  bool wasSaved;
 
   Rate({
     this.rate = 0,

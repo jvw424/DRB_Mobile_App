@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
-import 'package:drb_app/models/LotLocations.dart';
+import 'package:drb_app/models/Activity.dart';
 import 'package:drb_app/models/Rate.dart';
 import 'package:drb_app/models/Sequence.dart';
 import 'package:drb_app/models/SubmitInfo.dart';
@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class SubmitProvider extends ChangeNotifier {
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -24,7 +23,10 @@ class SubmitProvider extends ChangeNotifier {
   List<bool> _selectedDrbs = [];
   List<String> _drbIds = [];
 
+  String dir = '';
+
   bool _stillSearching = true;
+  List<Activity> acts = [];
 
   Future fetchInitialDrbs() async {
     try {
@@ -137,6 +139,48 @@ class SubmitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future fetchInitialActs() async {
+    try {
+      _stillSearching = true;
+      acts.clear();
+      notifyListeners();
+      QuerySnapshot snap = await db.collection('Activity').limit(60).get();
+
+      for (var doc in snap.docs) {
+        final res = Activity.fromMap(doc.data() as Map);
+        acts.add(res);
+      }
+
+      if (acts.isEmpty) {
+        _stillSearching = false;
+      }
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<String?> getDownloadPath() async {
+    Directory? directory;
+    try {
+      if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download');
+        // Put file in global download folder, if for an unknown reason it didn't exist, we fallback
+        // ignore: avoid_slow_async_io
+        if (!await directory.exists())
+          directory = await getExternalStorageDirectory();
+      } else {
+        String? path = await getDownloadPath();
+        return path;
+      }
+    } catch (err) {
+      print("Cannot get download folder path");
+    }
+    return directory?.path;
+  }
+
   makeCSV() async {
     List<List<dynamic>> csvList = [];
 
@@ -234,24 +278,25 @@ class SubmitProvider extends ChangeNotifier {
     String range = '';
 
     if (savedDrbs.length > 1) {
-      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
-      range += ' - ';
       range += DateFormat('M-d-yy').format(savedDrbs.last.submitDate!);
+      range += ' - ';
+      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
     } else {
       range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
     }
 
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-    ].request();
+    dir = (await getDownloadPath())!;
 
-    var directory = await (getExternalStorageDirectory());
-    final path = "${directory!.path}/${savedDrbs[0].location}_$range.csv";
-    print(path);
+    final path = "${dir}/${savedDrbs[0].location}___$range.csv";
+
     await File('$path').create(recursive: true);
     final File file = File(path);
     await file.writeAsString(csv);
-    print("file saved");
+
+    for (var i = 0; i < _selectedDrbs.length; i++) {
+      _selectedDrbs[i] = false;
+    }
+    notifyListeners();
   }
 
   Future fetchLots() async {
@@ -754,6 +799,14 @@ class SubmitProvider extends ChangeNotifier {
 
   bool get stillSearching {
     return _stillSearching;
+  }
+
+  String get getDir {
+    return dir;
+  }
+
+  List<Activity> get getActs {
+    return acts;
   }
 
   List<String> get getLots {

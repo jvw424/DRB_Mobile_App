@@ -1,11 +1,8 @@
 import 'package:drb_app/Screens/drb_route/LocationSelector.dart';
 import 'package:drb_app/Screens/drawer/NavDrawer.dart';
 import 'package:drb_app/providers/LotProvider.dart';
-import 'package:drb_app/providers/SubmitProvider.dart';
-import 'package:drb_app/Screens/Auth/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -57,13 +54,13 @@ class HomePage extends StatelessWidget {
                       fixedSize: const Size(300, 100),
                       backgroundColor: Colors.white),
                   onPressed: () {
-                    // lotProv.locateLots();
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           LocationSelctor(isLocated: true),
-                    //     ));
+                    lotProv.locateLots();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              LocationSelctor(isLocated: true),
+                        ));
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

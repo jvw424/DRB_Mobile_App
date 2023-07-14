@@ -427,7 +427,7 @@ class PastSubmissions extends StatelessWidget {
                       onPressed: () {
                         subCon.makeCSV();
                       },
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.save_alt_rounded,
@@ -438,6 +438,7 @@ class PastSubmissions extends StatelessWidget {
                           ),
                           Text(
                             'Download CSV',
+                            maxLines: 3,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white,

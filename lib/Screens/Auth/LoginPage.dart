@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Perfect Parking Login'),
+        title: const Text('Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 32.0, right: 32, top: 32),
@@ -37,15 +37,12 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              height: 100,
-            ),
             Container(
-              height: MediaQuery.of(context).size.height * .15,
+              height: MediaQuery.of(context).size.height * .3,
               decoration: const BoxDecoration(
                   image: DecorationImage(
-                      fit: BoxFit.none,
-                      image: AssetImage('assets/PP_logo.png'))),
+                      fit: BoxFit.fitHeight,
+                      image: AssetImage('assets/logo.png'))),
             ),
             SizedBox(
               height: 20,

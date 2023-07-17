@@ -24,6 +24,7 @@ class SubmitProvider extends ChangeNotifier {
   List<String> _drbIds = [];
 
   String dir = '';
+  String fileName = '';
 
   bool _stillSearching = true;
   List<Activity> acts = [];
@@ -69,7 +70,7 @@ class SubmitProvider extends ChangeNotifier {
           .collection('Submissions')
           .where('location', isEqualTo: text)
           .orderBy('submitDate', descending: true)
-          .limit(30)
+          .limit(80)
           .get();
 
       for (var doc in snap.docs) {
@@ -128,6 +129,39 @@ class SubmitProvider extends ChangeNotifier {
   }
 
   drbDelete() async {
+    String range = '';
+    List<SubmitInfo> savedDrbs = [];
+
+    for (var i = 0; i < _selectedDrbs.length; i++) {
+      if (_selectedDrbs[i]) {
+        savedDrbs.add(_drbs[i]);
+      }
+    }
+    if (savedDrbs.length > 1) {
+      range += savedDrbs.last.location;
+      range += '_';
+      range += DateFormat('M-d-yy').format(savedDrbs.last.submitDate!);
+      range += '_';
+      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
+    } else {
+      range += savedDrbs.last.location;
+      range += '_';
+      range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
+    }
+
+    String sup = await getSupervisorName();
+
+    Activity curAct = Activity(
+        user: sup,
+        activity: "Deleted submissions: $range",
+        when: DateTime.now());
+
+    await db
+        .collection("Activity")
+        .doc()
+        .set(curAct.toJson())
+        .onError((e, _) => print("Error writing document: $e"));
+
     for (var i = 0; i < _selectedDrbs.length; i++) {
       if (_selectedDrbs[i]) {
         await db.collection('Submissions').doc(_drbIds[i]).delete();
@@ -279,15 +313,16 @@ class SubmitProvider extends ChangeNotifier {
 
     if (savedDrbs.length > 1) {
       range += DateFormat('M-d-yy').format(savedDrbs.last.submitDate!);
-      range += ' - ';
+      range += '_';
       range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
     } else {
       range += DateFormat('M-d-yy').format(savedDrbs.first.submitDate!);
     }
 
     dir = (await getDownloadPath())!;
+    fileName = '${savedDrbs[0].location}_$range.csv';
 
-    final path = "${dir}/${savedDrbs[0].location}___$range.csv";
+    final path = "${dir}/${savedDrbs[0].location}_$range.csv";
 
     await File('$path').create(recursive: true);
     final File file = File(path);
@@ -803,6 +838,10 @@ class SubmitProvider extends ChangeNotifier {
 
   String get getDir {
     return dir;
+  }
+
+  String get getFile {
+    return fileName;
   }
 
   List<Activity> get getActs {

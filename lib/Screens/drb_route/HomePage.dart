@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     final lotProv = Provider.of<LotProvider>(context, listen: false);
     return Scaffold(
       drawer: const NavDrawer(),
-      appBar: AppBar(title: const Text("DRB Home")),
+      appBar: AppBar(title: const Text("Home")),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 60, right: 60),

@@ -23,7 +23,8 @@ class NavDrawer extends StatelessWidget {
           const DrawerHeader(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    fit: BoxFit.none, image: AssetImage('assets/PP_logo.png'))),
+                    fit: BoxFit.fitHeight,
+                    image: AssetImage('assets/logo.png'))),
             child: SizedBox.shrink(),
           ),
           ListTile(

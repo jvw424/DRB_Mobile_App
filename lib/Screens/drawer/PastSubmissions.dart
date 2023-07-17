@@ -46,7 +46,7 @@ class PastSubmissions extends StatelessWidget {
                   input.year,
                   input.month,
                   input.day,
-                  1,
+                  0,
                   0,
                 );
               } else {
@@ -55,7 +55,7 @@ class PastSubmissions extends StatelessWidget {
                   input.month,
                   input.day,
                   23,
-                  0,
+                  59,
                 );
               }
             }
@@ -389,6 +389,9 @@ class PastSubmissions extends StatelessWidget {
                       ),
                       onPressed: () {
                         subCon.drbDelete();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Successfully Deleted")));
                       },
                       child: const Center(
                         child: Row(
@@ -424,8 +427,12 @@ class PastSubmissions extends StatelessWidget {
                         alignment:
                             Alignment.center, //set the button's child Alignment
                       ),
-                      onPressed: () {
-                        subCon.makeCSV();
+                      onPressed: () async {
+                        await subCon.makeCSV();
+                        String dir = subCon.getFile;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Downloaded: ${dir}')));
                       },
                       child: Row(
                         children: [

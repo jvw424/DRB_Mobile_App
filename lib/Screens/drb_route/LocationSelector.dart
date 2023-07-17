@@ -45,7 +45,7 @@ class LocationSelctor extends StatelessWidget {
             ),
             subtitle: Text(lots[index].number.toString()),
             trailing: IconButton(
-                icon: const Icon(Icons.arrow_forward),
+                icon: Icon(Icons.arrow_forward),
                 onPressed: () async {
                   await atProv.fetchAts();
                   atProv.clearSelectedAts();

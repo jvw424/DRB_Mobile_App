@@ -136,7 +136,7 @@ class Submit extends StatelessWidget {
               Navigator.popUntil(
                   context, (Route<dynamic> route) => route.isFirst);
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Saved Successfully")));
+                  const SnackBar(content: Text("Submitted Successfully")));
             },
             child: const Text(
               'Submit DRB',

@@ -26,6 +26,8 @@ class SubmitProvider extends ChangeNotifier {
   String dir = '';
   String fileName = '';
 
+  String selLoc = '';
+
   bool _stillSearching = true;
   List<Activity> acts = [];
 
@@ -124,7 +126,17 @@ class SubmitProvider extends ChangeNotifier {
   }
 
   drbTap(int idx) {
-    _selectedDrbs[idx] = !_selectedDrbs[idx];
+    if (selLoc == '') {
+      _selectedDrbs[idx] = !_selectedDrbs[idx];
+      selLoc = _drbs[idx].location;
+    } else if (_drbs[idx].location != selLoc) {
+      for (var i = 0; i < _selectedDrbs.length; i++) {
+        _selectedDrbs[i] = false;
+      }
+      selLoc = '';
+    } else {
+      _selectedDrbs[idx] = !_selectedDrbs[idx];
+    }
     notifyListeners();
   }
 
@@ -220,14 +232,22 @@ class SubmitProvider extends ChangeNotifier {
 
     List<SubmitInfo> savedDrbs = [];
 
+    int cashTot = 0;
+    int credTot = 0;
+
     for (var i = 0; i < _selectedDrbs.length; i++) {
       if (_selectedDrbs[i]) {
-        List<dynamic> header = [];
+        List<dynamic> header = [
+          'Date',
+          'Cash',
+          'Credit',
+          '',
+          '',
+          '',
+          '',
+        ];
         List<dynamic> r1 = [];
 
-        header.add('Date');
-        header.add('Cash');
-        header.add('Credit');
         header.add('Deposit');
         header.add('Over/Short');
         header.add('Bag #');
@@ -240,11 +260,18 @@ class SubmitProvider extends ChangeNotifier {
         header.add('Notes');
         header.add('Cash Pickup');
         header.add('Pickup Supervisor');
-        header.add('Location');
+      
+
+        cashTot += _drbs[i].cashTot!;
+        credTot += _drbs[i].credTot!;
 
         r1.add(DateFormat('M/d/yy h:mm a').format(_drbs[i].submitDate!));
         r1.add(_drbs[i].cashTot!);
         r1.add(_drbs[i].credTot!);
+        r1.add('');
+        r1.add('');
+        r1.add('');
+        r1.add('');
         r1.add(_drbs[i].depositTotal!);
         r1.add(_drbs[i].overShort);
         r1.add(_drbs[i].bagNum!);
@@ -257,7 +284,7 @@ class SubmitProvider extends ChangeNotifier {
         r1.add(_drbs[i].notes ?? null);
         r1.add(_drbs[i].pickUpTotal ?? null);
         r1.add(_drbs[i].pickupSups ?? null);
-        r1.add(_drbs[i].location);
+  
 
         csvList.add(header);
         csvList.add(r1);
@@ -267,6 +294,12 @@ class SubmitProvider extends ChangeNotifier {
           for (var rate in seqs.rates) {
             if (rate == seqs.rates.first) {
               List<dynamic> rateHeader = [
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
                 '',
               ];
 
@@ -288,6 +321,12 @@ class SubmitProvider extends ChangeNotifier {
 
             List<dynamic> rateRow = [
               '',
+              '',
+              '',
+              '',
+              '',
+              '',
+              '',
             ];
             rateRow.add(rate.cash);
             rateRow.add(rate.creditTotal);
@@ -307,6 +346,17 @@ class SubmitProvider extends ChangeNotifier {
         }
       }
     }
+
+    csvList.add([
+      '',
+      'Total Cash',
+      'Total Credit',
+    ]);
+    csvList.add([
+      '',
+      cashTot,
+      credTot,
+    ]);
     String csv = const ListToCsvConverter().convert(csvList);
 
     String range = '';
@@ -838,6 +888,10 @@ class SubmitProvider extends ChangeNotifier {
 
   String get getDir {
     return dir;
+  }
+
+  String get getSelLoc {
+    return selLoc;
   }
 
   String get getFile {

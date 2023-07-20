@@ -167,7 +167,7 @@ class SeqProvider extends ChangeNotifier {
             (curRate.voids +
                 curRate.credits +
                 curRate.validations +
-                (curRate.startCod - curRate.endCod)) <
+                (curRate.endCod - curRate.startCod)) <=
         0) {
       return false;
     }

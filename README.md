@@ -43,7 +43,7 @@ With this example in mind listed next are potential or current issues the applic
   - Ability to start completing the form, save, and return later to complete
 
 # Wiki
-The [wiki]() contains detailed info on app usage and capabilities. Section Outlines for the wiki are below:
+The [wiki](https://github.com/jvw424/drb_app/wiki/Form-Submission-Flow) contains detailed info on app usage and capabilities. Section Outlines for the wiki are below:
 1. Form Submission Flow
      - Beginning a new Sequence
      - Continuing on an existing Sequence

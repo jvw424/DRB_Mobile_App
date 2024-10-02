@@ -5,7 +5,7 @@
 - [Wiki](#wiki)
 - [Screenshots](#screenshots)
 - [Technologies](#technologies)
-- [Contact](#contact)
+- [Installation](#installation)
 
 # Introduction
 
@@ -94,5 +94,11 @@ The [wiki]() contains detailed info on app usage and capabilities. Section Outli
     - Firebase Firestore: For storing and syncing data in real time.
     - Firebase Authentication: To manage user authentication securely.
   
-# Contact
-Guidelines for contributing to the project.
+# Installation
+
+- The project used to be hosted on google play, but was not maintained and is only distributed locally now.
+<div  style="display: flex; align-items: flex-start;">
+ <img src="assets/gplay.jpg" alt="Dashboard" width="600" style="margin-right: 20px;"/>
+ </div>
+
+- Feel free to download, but unless configuration is moved to a different firebase instance users won't be able to login

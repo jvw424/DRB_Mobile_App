@@ -15,6 +15,13 @@
 
 # Problems
 
+Example of the paper form:
+<div  style="display: flex; align-items: flex-start;">
+ <img src="assets/drb.png" alt="Dashboard" width="600" style="margin-right: 20px;"/>
+</div>
+
+With this example in mind listed next are potential or current issues the application aims to address:
+
 - Frontend - Completing the forms
     1. **Security** - with pen and paper forms there was more room for potential fraud as well as no geofencing
     2. **Redundancy** - many of the fields being manually written could be automated: time, date, location, prior transactions

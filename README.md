@@ -1,6 +1,6 @@
 
 - [Introduction](#introduction)
-- [Problems](#problems)
+- [Problem](#problem)
 - [Features](#features)
 - [Wiki](#wiki)
 - [Screenshots](#screenshots)
@@ -13,7 +13,7 @@
 - The codebase is adapted from my work experience at [Perfect Parking Inc.](https://www.perfectparkingla.com/)
 - I am publishing this repository, with permission from ownership at Perfect Parking, in order to share to the Flutter and open-source community, spread interest in freelance development for small businesses, and showcase my work.
 
-# Problems
+# Problem
 
 Example of the paper form:
 <div  style="display: flex; align-items: flex-start;">

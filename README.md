@@ -5,7 +5,7 @@
 - [Wiki](#wiki)
 - [Screenshots](#screenshots)
 - [Technologies](#technologies)
-- [Contact](#contact)
+- [Installation](#installation)
 
 # Introduction
 
@@ -14,6 +14,13 @@
 - I am publishing this repository, with permission from ownership at Perfect Parking, in order to share to the Flutter and open-source community, spread interest in freelance development for small businesses, and showcase my work.
 
 # Problems
+
+Example of the paper form:
+<div  style="display: flex; align-items: flex-start;">
+ <img src="assets/drb.png" alt="Dashboard" width="600" style="margin-right: 20px;"/>
+</div>
+
+With this example in mind listed next are potential or current issues the application aims to address:
 
 - Frontend - Completing the forms
     1. **Security** - with pen and paper forms there was more room for potential fraud as well as no geofencing
@@ -36,7 +43,7 @@
   - Ability to start completing the form, save, and return later to complete
 
 # Wiki
-The [wiki]() contains detailed info on app usage and capabilities. Section Outlines for the wiki are below:
+The [wiki](https://github.com/jvw424/drb_app/wiki/Form-Submission-Flow) contains detailed info on app usage and capabilities. Section Outlines for the wiki are below:
 1. Form Submission Flow
      - Beginning a new Sequence
      - Continuing on an existing Sequence
@@ -87,5 +94,11 @@ The [wiki]() contains detailed info on app usage and capabilities. Section Outli
     - Firebase Firestore: For storing and syncing data in real time.
     - Firebase Authentication: To manage user authentication securely.
   
-# Contact
-Guidelines for contributing to the project.
+# Installation
+
+- The project used to be hosted on google play, but was not maintained and is only distributed locally now.
+<div  style="display: flex; align-items: flex-start;">
+ <img src="assets/gplay.jpg" alt="Dashboard" width="600" style="margin-right: 20px;"/>
+ </div>
+
+- Feel free to download, but unless configuration is moved to a different firebase instance users won't be able to login

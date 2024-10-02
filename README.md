@@ -9,7 +9,7 @@
 
 # Introduction
 
-- This application is a form submission and auditing system meant to improve the workflow for a parking company's daily revenue reconciliation.
+- This application is a form submission and auditing system meant to improve the workflow for a parking company's daily revenue breakdown (DRB) process.
 - The codebase is adapted from my work experience at [Perfect Parking Inc.](https://www.perfectparkingla.com/)
 - I am publishing this repository, with permission from ownership at Perfect Parking, in order to share to the Flutter and open-source community, spread interest in freelance development for small businesses, and showcase my work.
 

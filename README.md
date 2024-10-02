@@ -27,7 +27,7 @@ With this example in mind listed next are potential or current issues the applic
     2. **Redundancy** - many of the fields being manually written could be automated: time, date, location, prior transactions
     3. **Consistency** - across different locations some form fields were used differently than others
     4. **Legibility** - after a busy day with many rate changes the form could become difficult to comprehend
-    5. **Complex** - real time prompts and feedback on the app make it more simple to complete than the paper forms as well as completing all necessary calculations
+    5. **Complexity** - real time prompts and feedback on the app make it more simple to complete than the paper forms as well as completing all necessary calculations
 - Backend - Handling completed forms
     1. **Verification** - all paper forms must be manually audited to verify accuracy of data and deposit information, something automatically ensured by the structure of the application
     2. **Delay** - real time metrics are slower and more difficult to track since form collection and processing happens at the end of the month
